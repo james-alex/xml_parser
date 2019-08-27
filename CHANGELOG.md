@@ -1,3 +1,3 @@
-## [0.1.0] - August 24, 2019
+## [0.1.0] - August 27, 2019
 
 * Initial release.
