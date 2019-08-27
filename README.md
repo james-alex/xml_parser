@@ -60,7 +60,7 @@ print(title.text); // xml_parser 0.1.0
 
 __Note:__ HTML documents, as long as their empty tags are self-closing,
 can be parsed as XML. See the example for a more in-depth look at parsing
-this page.
+this page: https://pub.dev/packages/xml_parser#-example-tab-
 
 ## Extracting Nodes
 
