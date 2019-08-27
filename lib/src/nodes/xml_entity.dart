@@ -92,7 +92,7 @@ class XmlEntity implements XmlNode {
     String ndata,
     bool copyNull = false,
   }) {
-    assert(name == null || name.length > 0);
+    assert(name == null || name.isNotEmpty);
     assert(!(isPublic && isSystem));
     assert(copyNull != null);
 

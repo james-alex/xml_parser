@@ -84,7 +84,7 @@ class XmlDoctype implements XmlNode {
     List<XmlNode> internalDtd,
     bool copyNull = false,
   }) {
-    assert(element == null || element.length > 0);
+    assert(element == null || element.isNotEmpty);
     assert(!(isPublic && isSystem));
     assert(copyNull != null);
 

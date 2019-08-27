@@ -57,7 +57,7 @@ class Delimiters {
   /// Matches an XML element from its opening tag to its
   /// closing tag and captures its children.
   static RecursiveRegex element(String elementName, [bool global = false]) {
-    assert(elementName != null && elementName.length > 0);
+    assert(elementName != null && elementName.isNotEmpty);
     assert(global != null);
 
     return RecursiveRegex(

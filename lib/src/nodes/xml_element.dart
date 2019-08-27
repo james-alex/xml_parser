@@ -109,8 +109,9 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     String text = '';
 
     children?.forEach((XmlNode child) {
-      if (child is XmlText && !child.isMarkup)
+      if (child is XmlText && !child.isMarkup) {
         text += ((text.isEmpty) ? '' : ' ') + child.value;
+      }
     });
 
     if (text.isEmpty) return null;
@@ -185,7 +186,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     List<XmlNode> children,
     bool copyNull = false,
   }) {
-    assert(name == null || name.length > 0);
+    assert(name == null || name.isNotEmpty);
     assert(copyNull != null);
 
     if (!copyNull) {
