@@ -1,0 +1,216 @@
+<!-- All summaries are from Wikipedia, and the quotes from Goodreads -->
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE library [
+    <!ELEMENT book (summary,quotes)>
+    <!ATTLIST book (author,title,year) #REQUIRED>
+    <!ELEMENT summary (#PCDATA)>
+    <!ELEMENT quotes (quote*)>
+    <!ELEMENT quote (#PCDATA)>
+]>
+<library>
+    <book author="Toni Morrison" title="Song of Solomon" year="1977">
+        <summary>
+            Song of Solomon follows the life of Macon "Milkman" Dead III, an
+            African-American man living in Michigan, from birth to adulthood.
+        </summary>
+        <quotes>
+            <quote>
+                "You wanna fly, you got to give up the shit that weighs you
+                down."
+            </quote>
+            <quote>
+                "She was fierce in the presence of death, heroic even, as she
+                was at no other time. Its threat gave her direction, clarity,
+                audacity."
+            </quote>
+            <quote>
+                "If you surrendered to the air, you could ride it."
+            </quote>
+        </quotes>
+    </book>
+    <book author="John Steinbeck" title="The Pearl" year="1947">
+        <summary>
+            The Pearl is the story of a pearl diver, Kino, and explores man's
+            nature as well as greed, defiance of societal norms, and evil.
+        </summary>
+        <quotes>
+            <quote>
+                "He said, 'I am a man,' and that meant certain things to Juana.
+                It meant that he was half insane and half god."
+            </quote>
+            <quote>
+                "We do know that we are cheated from birth to the overcharge on
+                our coffins."
+            </quote>
+            <quote>
+                "A plan is a real thing, and things projected are experienced. A
+                plan once made and visualized becomes reality along with other
+                realities—never to be destroyed but easily to be attacked."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Jane Austen" title="Northanger Abbey" year="1817">
+        <summary>
+             This coming-of-age story revolves around Catherine Morland, a young
+             and naïve "heroine", who entertains the reader on her journey to a
+             better understanding of the world and those around her.
+        </summary>
+        <quotes>
+            <quote>
+                "The person, be it gentleman or lady, who has not pleasure in a
+                good novel, must be intolerably stupid."
+            </quote>
+            <quote>
+                "It is well to have as many holds upon happiness as possible."
+            </quote>
+            <quote>
+                "I cannot speak well enough to be unintelligible."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Aldous Huxley" title="Island" year="1962">
+        <summary>
+            Island is the account of Will Farnaby, a cynical journalist who is
+            shipwrecked on the fictional island of Pala.
+        </summary>
+        <quotes>
+            <quote>
+                "It isn't a matter of forgetting. What one has to learn is how
+                to remember and yet be free of the past."
+            </quote>
+            <quote>
+                "We cannot reason ourselves out of our basic irrationality. All
+                we can do is learn the art of being irrational in a reasonable
+                way."
+            </quote>
+            <quote>
+                "All gods are homemade, and it is we who pull their strings, and
+                so, give them the power to pull ours."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Emma Goldman" title="Living My Life" year="1931">
+        <summary>
+            Living My Life is the autobiography of Lithuanian-born anarchist
+            Emma Goldman, who became internationally renowned as an activist
+            based in the United States.
+        </summary>
+        <quotes>
+            <quote>
+                "I want freedom, the right to self-expression, everybody's right
+                to beautiful, radiant things. Anarchism meant that to me, and I
+                would live it in spite of the whole world."
+            </quote>
+            <quote>
+                "I grew furious at the impudent interference of the boy. I told
+                him to mind his own business."
+            </quote>
+            <quote>
+                "I did not believe that a Cause which stood for a beautiful
+                ideal, for anarchism, for release and freedom from convention
+                and prejudice, should demand the denial of life and joy."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Albert Camus" title="The Fall" year="1942">
+        <summary>
+            Set in Amsterdam, The Fall consists of a series of dramatic
+            monologues by the self-proclaimed "judge-penitent" Jean-Baptiste
+            Clamence, as he reflects upon his life to a stranger.
+        </summary>
+        <quotes>
+            <quote>
+                "You know what charm is: a way of getting the answer yes without
+                having asked any clear question."
+            </quote>
+            <quote>
+                "I used to advertise my loyalty and I don't believe there is a
+                single person I loved that I didn't eventually betray."
+            </quote>
+            <quote>
+                "People hasten to judge in order not to be judged themselves."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Charlotte Brontë" title="Villette" year="1853">
+        <summary>
+            After an unspecified family disaster, the protagonist Lucy Snowe
+            travels from her native England to the fictional French-speaking
+            city of Villette to teach at a girls' school, where she is drawn
+            into adventure and romance.
+        </summary>
+        <quotes>
+            <quote>
+                "Life is so constructed, that the event does not, cannot, will
+                not, match the expectation."
+            </quote>
+            <quote>
+                "Silence is of different kinds, and breathes different
+                meanings."
+            </quote>
+            <quote>
+                "I believe in some blending of hope and sunshine sweetening the
+                worst lots."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Louisa May Alcott" title="Little Women" year="1868">
+        <summary>
+            Following the lives of the four March sisters—Meg, Jo, Beth and
+            Amy—the novel details their passage from childhood to womanhood and
+            is loosely based on the author and her three sisters.
+        </summary>
+        <quotes>
+            <quote>"I like good strong words that mean something…"</quote>
+            <quote>
+                "I am not afraid of storms, for I am learning how to sail my
+                ship."
+            </quote>
+            <quote>
+                "I'd rather take coffee than compliments just now."
+            </quote>
+        </quotes>
+    </book>
+    <book author="George Eliot (Mary Ann Evans)" title="Middlemarch" year="1871">
+        <summary>
+            Middlemarch is set in the fictitious Midlands town of Middlemarch
+            during 1829–1832, and follows several distinct, intersecting
+            stories with a large cast of characters.
+        </summary>
+        <quotes>
+            <quote>
+                "It is a narrow mind which cannot look at a subject from various
+                points of view."
+            </quote>
+            <quote>
+                "It is always fatal to have music or poetry interrupted."
+            </quote>
+            <quote>
+                "But what we call our despair is often only the painful
+                eagerness of unfed hope."
+            </quote>
+        </quotes>
+    </book>
+    <book author="Joseph Conrad" title="Nostromo" year="1904">
+        <summary>
+            Nostromo follows an Italian expatriate who has risen to his position
+            through his bravery and daring exploits. The story is set in the
+            mining town of Sulaco, a port in the western region of an imaginary
+            South American country, Costaguana.
+        </summary>
+        <quotes>
+            <quote>
+                "Government in general, any government anywhere, is a thing of
+                exquisite comicality to a discerning mind."
+            </quote>
+            <quote>
+                "That man seems to have a particular talent for being on the
+                spot whenever there is something picturesque to be done."
+            </quote>
+            <quote>
+                "Action is consolatory. It is the enemy of thought and the
+                friend of flattering illusions."
+            </quote>
+        </quotes>
+    </book>
+</library>

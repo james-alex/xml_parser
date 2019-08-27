@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?pi foo="bar" ?>
+<!DOCTYPE root [
+    <!ENTITY author "j.alex@email.com">
+    <!ELEMENT text (#PCDATA)>
+    <!ELEMENT image EMPTY>
+    <!ATTLIST image alt CDATA #IMPLIED>
+    <!ATTLIST image width CDATA #REQUIRED>
+    <!ATTLIST image height CDATA #REQUIRED>
+    <!ATTLIST image src CDATA #REQUIRED>
+    <!ENTITY condition "INCLUDE">
+    <!NOTATION test2 SYSTEM "tests/test2">
+    <!ATTLIST text test2 NOTATION (test2) #FIXED "test">
+    <!NOTATION test1 PUBLIC "notation test1" "https://test.com/notation1">
+    <!ATTLIST text test1 NOTATION (test1) #IMPLIED>
+]>
+<!-- Start of content -->
+<root author="&author;">
+    <text>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</text>
+    <![ &condition; [
+        <image width="50" height="80" src="test1.gif" />
+        <text>Proin in lectus vel ipsum sagittis cursus.</text>
+        <![ INCLUDE [
+            <text test2="test">
+                Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas
+                odio, fermentum vulputate elit erat ut ex.
+                <![ IGNORE [
+                    Donec id augue hendrerit dui rhoncus elementum vel sit amet
+                    sapien.
+                ]]>
+            </text>
+        ]]>
+        <![ IGNORE [<image width="250" height="300" src="test2.gif" />]]>
+    ]]>
+    <text bold="true">Suspendisse et sollicitudin est, ut gravida sapien.</text>
+    <cdata>
+        <![CDATA[
+            <markup bool="false">
+                liquam venenatis lobortis tellus non lobortis.
+            </markup>
+        ]]>
+    </cdata>
+    <!--<text>Nullam lobortis eros eget egestas finibus.</text>-->
+    <image width="500" height="800" src="test3.png" alt="Test 3" />
+    <link id="google">
+        <![CDATA[<a href="https://google.com">Google</a>]]>
+    </link>
+</root>
