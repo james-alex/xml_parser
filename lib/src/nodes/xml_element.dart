@@ -559,8 +559,9 @@ class XmlElement extends NodeWithChildren implements XmlNode {
                   attributesToValidate--;
                 }
 
-                if (attributeNamesToValidate <= 0 && attributesToValidate <= 0)
+                if (attributeNamesToValidate <= 0 && attributesToValidate <= 0) {
                   break;
+                }
               }
 
               if (attributeNamesToValidate > 0 || attributesToValidate > 0) {
