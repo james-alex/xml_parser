@@ -1,4 +1,3 @@
-import 'dart:io';
 import './helpers/node_with_children.dart';
 import './helpers/helpers.dart' as helpers;
 import './xml_node.dart';
@@ -126,50 +125,6 @@ class XmlDocument extends NodeWithChildren {
     });
 
     return document;
-  }
-
-  /// Asynchronously writes this document to a file.
-  ///
-  /// [path] should be a relative path from your root folder,
-  /// and the filename should be included.
-  ///
-  /// If [extension] isn't `null` and if [path] doesn't end
-  /// with [extension], it will be appended to [path].
-  Future<File> writeToFile(
-    String path, [
-    String extension = 'xml',
-    bool formatted = true,
-  ]) async {
-    assert(path != null && path.length > 0);
-    assert(formatted != null);
-
-    if (extension != null && !path.endsWith(extension)) path += extension;
-
-    final File file = await File(path).create(recursive: true);
-
-    return file.writeAsString((formatted) ? toFormattedString() : toString());
-  }
-
-  /// Synchronously writes this document to a file.
-  ///
-  /// [path] should be a relative path from your root folder,
-  /// and the filename should be included.
-  ///
-  /// If [extension] isn't `null` and if [path] doesn't end
-  /// with [extension], it will be appended to [path].
-  File writeToFileSync(
-    String path, [
-    String extension = 'xml',
-    bool formatted = true,
-  ]) {
-    assert(path != null && path.length > 0);
-    assert(formatted != null);
-
-    if (extension != null && !path.endsWith(extension)) path += extension;
-
-    return File(path)
-      ..createSync(recursive: true)
-      ..writeAsStringSync((formatted) ? toFormattedString() : toString());
   }
 
   /// Parses a XML string for its XML document declaration,

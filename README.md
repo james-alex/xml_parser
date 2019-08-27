@@ -704,7 +704,3 @@ methods.
 node/element, indenting each line as necessary. (Note: toFormattedString is
 rather rudimentary at the moment and I'd like to add additional formatting
 options to it at some point.)
-
-[XmlDocument] has two additional methods, [writeToFile] and [writeToFileSync]
-which utilize Dart's [File] class's methods of the same name. Both methods
-write [toString] or [toFormattedString]'s output directly to a file.
