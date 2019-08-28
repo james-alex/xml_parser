@@ -573,6 +573,11 @@ CDATA sections are parsed as [XmlCdata] nodes.
 [XmlCdata]'s value is left unmodified by the parser, with the exception of
 unnecessary whitespace if the [trimWhtiespace] option is `true`.
 
+__NOTE:__ By default CDATA sections are captured by the parser as [XmlText]
+nodes, allowing CDATA sections to be returned as text with the [XmlElement.text]
+getter. To parse CDATA as an [XmlCdata] node, you can set the [parseCdataAsText]
+option to `false` on the [toString] and [parseString] methods that support it.
+
 ## Comments
 
 Comments are parsed as [XmlComment] nodes.
