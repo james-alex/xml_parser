@@ -204,6 +204,11 @@ class XmlDoctype implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
+  ///
+  /// Returns `null` if no Doctype Declarations are found.
   static XmlDoctype fromString(
     String string, {
     bool parseCharacterEntities = true,
@@ -240,6 +245,11 @@ class XmlDoctype implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
+  ///
+  /// Returns `null` if no Doctype Declarations are found.
   static List<XmlDoctype> parseString(
     String string, {
     bool parseCharacterEntities = true,

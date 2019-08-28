@@ -363,6 +363,9 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
   ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
+  ///
   /// If [returnElementsNamed] is not `null`, only elements with a name
   /// contained in [returnElementsNamed] will be returned.
   ///
@@ -435,6 +438,9 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// If [global] is `true`, all elements will be returned regardless
   /// of whether they're nested within other elements. If `false`, only

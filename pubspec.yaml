@@ -2,7 +2,7 @@ name: xml_parser
 description: >-
   An unopinionated XML parser that can
   read, traverse, and write XML documents.
-version: 0.1.0+2
+version: 0.1.0+3
 author: James Alexander <j.alex@email.com>
 homepage: https://github.com/james-alex/xml_parser
 

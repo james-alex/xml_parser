@@ -46,6 +46,8 @@ class XmlCdata implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// Returns `null` if no CDATA sections are found.
   static XmlCdata fromString(
     String string, {
     bool trimWhitespace = true,
@@ -72,6 +74,8 @@ class XmlCdata implements XmlNode {
   /// Only matches found between [start] and [stop] will be returned.
   /// [start] must not be `null` and must be `>= 0`. [stop] may be `null`,
   /// but must be `>= start` if provided.
+  ///
+  /// Returns `null` if no CDATA sections are found.
   static List<XmlCdata> parseString(
     String string, {
     bool trimWhitespace = true,

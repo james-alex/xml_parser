@@ -394,6 +394,9 @@ abstract class XmlNode {
   /// Only matches found between [start] and [stop] will be returned.
   /// [start] must not be `null` and must be `>= 0`. [stop] may be `null`,
   /// but must be `>= start` if provided.
+  ///
+  /// Returns `null` if the [uri] can't be reached or no valid XML nodes
+  /// are found in the returned document.
   static Future<dynamic> fromUri(
     String uri, {
     bool parseCharacterEntities = true,

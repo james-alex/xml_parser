@@ -134,6 +134,8 @@ class XmlText implements XmlNode {
   /// Only matches found between [start] and [stop] will be returned.
   /// [start] must not be `null` and must be `>= 0`. [stop] may be `null`,
   /// but must be `>= start` if provided.
+  ///
+  /// Returns `null` if no text nodes are found.
   static List<XmlText> parseString(
     String string, {
     bool parseCharacterEntities = true,

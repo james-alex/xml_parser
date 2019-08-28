@@ -159,6 +159,8 @@ class XmlEntity implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// Returns `null` if no valid DTD entities are found.
   static XmlEntity fromString(
     String string, {
     bool trimWhitespace = true,
@@ -182,6 +184,8 @@ class XmlEntity implements XmlNode {
   /// Only matches found between [start] and [stop] will be returned.
   /// [start] must not be `null` and must be `>= 0`. [stop] may be `null`,
   /// but must be `>= start` if provided.
+  ///
+  /// Returns `null` if no valid DTD entities are found.
   static List<XmlEntity> parseString(
     String string, {
     bool trimWhitespace = true,

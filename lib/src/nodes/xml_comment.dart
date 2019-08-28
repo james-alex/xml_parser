@@ -40,6 +40,8 @@ class XmlComment implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// Returns `null` if no comments are found.
   static XmlComment fromString(
     String string, {
     bool trimWhitespace = true,

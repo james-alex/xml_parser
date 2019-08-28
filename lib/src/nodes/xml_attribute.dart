@@ -46,6 +46,8 @@ class XmlAttribute {
   /// If [parseCharacterEntities] is `true`, attribute values will be parsed
   /// and replace all encoded character entities with their corresponding
   /// character. [parseCharacterEntities] must not be `null`.
+  ///
+  /// Returns `null` if no attributes are found.
   static XmlAttribute fromString(
     String string, {
     bool parseCharacterEntities = true,
@@ -83,6 +85,8 @@ class XmlAttribute {
   /// Declarations. Only matches found between [start] and [stop] will be
   /// returned. [start] must not be `null` and must be `>= 0`. [stop] may be
   /// `null`, but must be `>= start` if provided.
+  ///
+  /// Returns `null` if no attributes are found.
   static List<XmlAttribute> parseString(
     String string, {
     bool parseCharacterEntities = true,

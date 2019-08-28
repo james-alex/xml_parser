@@ -147,6 +147,9 @@ class XmlDocument extends NodeWithChildren {
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
   ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
+  ///
   /// Returns `null` if the document is empty.
   static XmlDocument fromString(
     String document, {
@@ -194,6 +197,9 @@ class XmlDocument extends NodeWithChildren {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
+  ///
+  /// If [parseCdataAsText] is `true`, all CDATA sections will be
+  /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if the document couldn't be reached or is empty.
   static Future<XmlDocument> fromUri(
