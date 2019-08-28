@@ -155,17 +155,20 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
   }) {
     assert(string != null);
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
 
     return parseString(
       string,
       parseCharacterEntities: parseCharacterEntities,
       parseComments: parseComments,
       trimWhitespace: trimWhitespace,
+      parseCdataAsText: parseCdataAsText,
       stop: 0,
     )?.first;
   }
@@ -200,6 +203,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     bool global = false,
     int start = 0,
     int stop,
@@ -207,6 +211,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     assert(string != null);
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
+    assert(parseCdataAsText != null);
     assert(trimWhitespace != null);
     assert(global != null);
     assert(start != null && start >= 0);
@@ -238,6 +243,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
             parseCharacterEntities: parseCharacterEntities,
             parseComments: true,
             trimWhitespace: false,
+            parseCdataAsText: true,
           ),
         ),
       );

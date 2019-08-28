@@ -109,7 +109,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     String text = '';
 
     children?.forEach((XmlNode child) {
-      if (child is XmlText && !child.isMarkup) {
+      if (child is XmlText) {
         text += ((text.isEmpty) ? '' : ' ') + child.value;
       }
     });
@@ -391,6 +391,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     List<String> returnElementsNamed,
     List<String> returnElementsWithId,
     List<String> returnElementsWithAttributesNamed,
@@ -401,6 +402,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
     assert(matchAllAttributes != null ||
         (returnElementsWithAttributesNamed == null &&
             returnElementsWithAttributes == null));
@@ -410,6 +412,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
       parseCharacterEntities: parseCharacterEntities,
       parseComments: parseComments,
       trimWhitespace: trimWhitespace,
+      parseCdataAsText: parseCdataAsText,
       returnElementsNamed: returnElementsNamed,
       returnElementsWithId: returnElementsWithId,
       returnElementsWithAttributesNamed: returnElementsWithAttributesNamed,
@@ -470,6 +473,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     bool global = false,
     List<String> returnElementsNamed,
     List<String> returnElementsWithId,
@@ -484,6 +488,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
     assert(global != null);
     assert(matchAllAttributes != null ||
         (returnElementsWithAttributesNamed == null &&
@@ -518,6 +523,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
               parseCharacterEntities: parseCharacterEntities,
               parseComments: true,
               trimWhitespace: false,
+              parseCdataAsText: true,
             );
           }
 

@@ -76,18 +76,21 @@ abstract class XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     List<Type> returnNodesOfType,
   }) {
     assert(string != null);
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
 
     return parseString(
       string,
       parseCharacterEntities: parseCharacterEntities,
       parseComments: parseComments,
       trimWhitespace: trimWhitespace,
+      parseCdataAsText: parseCdataAsText,
       stop: 0,
     )?.first;
   }
@@ -121,6 +124,7 @@ abstract class XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     List<Type> returnNodesOfType,
     // TODO: global
     int start = 0,
@@ -130,6 +134,7 @@ abstract class XmlNode {
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
     assert(start != null && start >= 0);
     assert(stop == null || stop >= start);
 
@@ -225,10 +230,18 @@ abstract class XmlNode {
           } else if (type == 'CDATA') {
             setNode(Delimiters.cdata);
             if (node != null) {
-              xmlNode = XmlCdata.fromString(
-                node,
-                trimWhitespace: false,
-              );
+              if (parseCdataAsText) {
+                xmlNode = XmlText.fromString(
+                  node,
+                  trimWhitespace: false,
+                  isMarkup: true,
+                );
+              } else {
+                xmlNode = XmlCdata.fromString(
+                  node,
+                  trimWhitespace: false,
+                );
+              }
             }
           } else if (type == 'DOCTYPE') {
             setNode(Delimiters.doctype);
@@ -238,6 +251,7 @@ abstract class XmlNode {
                 parseCharacterEntities: parseCharacterEntities,
                 parseComments: true,
                 trimWhitespace: false,
+                parseCdataAsText: parseCdataAsText,
               );
             }
           } else if (type == 'ELEMENT') {
@@ -267,6 +281,7 @@ abstract class XmlNode {
                 parseCharacterEntities: parseCharacterEntities,
                 parseComments: true,
                 trimWhitespace: false,
+                parseCdataAsText: parseCdataAsText
               );
             }
           } else if (type == 'NOTATION') {
@@ -314,6 +329,7 @@ abstract class XmlNode {
               parseCharacterEntities: parseCharacterEntities,
               parseComments: true,
               trimWhitespace: false,
+              parseCdataAsText: parseCdataAsText
             );
           }
         }
@@ -383,6 +399,7 @@ abstract class XmlNode {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
     List<Type> returnNodesOfType,
     int start = 0,
     int stop,
@@ -391,6 +408,7 @@ abstract class XmlNode {
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
     assert(start != null && start >= 0);
     assert(stop == null || stop >= start);
 
@@ -412,6 +430,7 @@ abstract class XmlNode {
             parseCharacterEntities: parseCharacterEntities,
             parseComments: parseComments,
             trimWhitespace: trimWhitespace,
+            parseCdataAsText: parseCdataAsText,
           );
         } else if (nodeType == XmlAttlist) {
           return XmlAttlist.parseString(
@@ -441,6 +460,7 @@ abstract class XmlNode {
             parseCharacterEntities: parseCharacterEntities,
             parseComments: parseComments,
             trimWhitespace: trimWhitespace,
+            parseCdataAsText: parseCdataAsText,
             start: start,
             stop: stop,
           );
@@ -450,6 +470,7 @@ abstract class XmlNode {
             parseCharacterEntities: parseCharacterEntities,
             parseComments: parseComments,
             trimWhitespace: trimWhitespace,
+            parseCdataAsText: parseCdataAsText,
             start: start,
             stop: stop,
           );
@@ -459,6 +480,7 @@ abstract class XmlNode {
             parseCharacterEntities: parseCharacterEntities,
             parseComments: parseComments,
             trimWhitespace: trimWhitespace,
+            parseCdataAsText: parseCdataAsText,
             start: start,
             stop: stop,
           );
@@ -499,6 +521,7 @@ abstract class XmlNode {
       parseCharacterEntities: parseCharacterEntities,
       parseComments: parseComments,
       trimWhitespace: trimWhitespace,
+      parseCdataAsText: parseCdataAsText,
       returnNodesOfType: returnNodesOfType,
       start: start,
       stop: stop,

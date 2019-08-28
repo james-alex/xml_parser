@@ -153,11 +153,13 @@ class XmlDocument extends NodeWithChildren {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
   }) {
     assert(document != null);
     assert(parseCharacterEntities != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
 
     if (!parseComments) document = helpers.removeComments(document);
 
@@ -172,6 +174,7 @@ class XmlDocument extends NodeWithChildren {
       parseCharacterEntities: parseCharacterEntities,
       parseComments: true,
       trimWhitespace: false,
+      parseCdataAsText: parseCdataAsText,
     );
 
     if (nodes == null) return null;
@@ -198,16 +201,21 @@ class XmlDocument extends NodeWithChildren {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
+    bool parseCdataAsText = true,
   }) async {
     assert(uri != null);
     assert(parseComments != null);
     assert(trimWhitespace != null);
+    assert(parseCdataAsText != null);
 
-    final XmlDocument document = await XmlNode.fromUri(uri,
-        parseCharacterEntities: parseCharacterEntities,
-        parseComments: parseComments,
-        trimWhitespace: trimWhitespace,
-        returnNodesOfType: [XmlDocument]);
+    final XmlDocument document = await XmlNode.fromUri(
+      uri,
+      parseCharacterEntities: parseCharacterEntities,
+      parseComments: parseComments,
+      trimWhitespace: trimWhitespace,
+      returnNodesOfType: [XmlDocument],
+      parseCdataAsText: parseCdataAsText,
+    );
 
     return document;
   }

@@ -44,11 +44,10 @@ bool validateItems(List<XmlElement> items) {
       break;
     }
 
-    if (item.getChild('description').children.first.toString() !=
-        values['description']) {
+    if (item.getChild('description').text != values['description']) {
       print('[validateHackerNewsItems] item.getChild(\'description\').text != values[\'description\']');
       print('EXPECTED: ${values['description']}');
-      print('ACTUAL: ${item.getChild('description').children.first.toString()}');
+      print('ACTUAL: ${item.getChild('description').text}');
       valid = false;
       break;
     }
