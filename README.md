@@ -96,9 +96,9 @@ List<XmlNode> nodes = XmlNode.parseString(
 [XmlDocument]s and every type of node that can have children store their
 children in lists of [XmlNode]s.
 
-Because XML nodes have varying properties, the only [toString] and
-[toFormattedString] methods are available every node (more on those at
-the bottom.) As such, all other getters and methods are specific to
+Because XML nodes have varying properties, only the [toString] and
+[toFormattedString] methods are available every node (more on those
+below.) As such, all other getters and methods are specific to
 each node.
 
 To access the properties of a node, test its type with the `is` operator:
