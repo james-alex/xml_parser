@@ -9,10 +9,10 @@ class XmlAttribute {
   /// An attribute of a XML element.
   ///
   /// [name] must not be `null` or empty.
-  const XmlAttribute(
+  XmlAttribute(
     this.name,
     this.value,
-  ) : assert(name != null && name.length > 0);
+  ) : assert(name != null && name.isNotEmpty);
 
   /// The name of the attribute.
   final String name;

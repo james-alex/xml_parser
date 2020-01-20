@@ -12,7 +12,7 @@ class XmlDocument extends NodeWithChildren {
   /// A XML document.
   ///
   /// [nodes] must not be null.
-  const XmlDocument(this.children) : assert(children != null);
+  XmlDocument(this.children) : assert(children != null);
 
   /// The list of root level nodes in this document.
   ///

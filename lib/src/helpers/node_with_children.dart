@@ -5,7 +5,7 @@ import '../xml_node.dart';
 @immutable
 abstract class NodeWithChildren {
   /// Base class for nodes with children that can contain [XmlElement]s.
-  const NodeWithChildren();
+  NodeWithChildren();
 
   /// The list of [children] each getter and method references.
   final List<XmlNode> children = null;
@@ -75,8 +75,7 @@ abstract class NodeWithChildren {
     elementName = elementName.toLowerCase();
 
     return children.firstWhere(
-      (child) =>
-          child is XmlElement && child.name.toLowerCase() == elementName,
+      (child) => child is XmlElement && child.name.toLowerCase() == elementName,
       orElse: () => null,
     );
   }
@@ -104,8 +103,7 @@ abstract class NodeWithChildren {
     elementName = elementName.toLowerCase();
 
     return children.lastWhere(
-      (child) =>
-          child is XmlElement && child.name.toLowerCase() == elementName,
+      (child) => child is XmlElement && child.name.toLowerCase() == elementName,
       orElse: () => null,
     );
   }

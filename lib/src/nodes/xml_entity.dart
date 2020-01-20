@@ -17,7 +17,7 @@ class XmlEntity implements XmlNode {
   ///
   /// [isSystem] and [isPublic] must not be `null`, and only
   /// one of them may be `true`.
-  const XmlEntity(
+  XmlEntity(
     this.name,
     this.value, {
     this.isParameter = false,
@@ -25,7 +25,7 @@ class XmlEntity implements XmlNode {
     this.isPublic = false,
     this.externalEntities,
     this.ndata,
-  })  : assert(name != null && name.length > 0),
+  })  : assert(name != null && name.isNotEmpty),
         assert(value != null),
         assert(isParameter != null),
         assert(isSystem != null),
@@ -124,8 +124,7 @@ class XmlEntity implements XmlNode {
 
     final quotationMark = doubleQuotes ? '"' : '\'';
 
-    final identifier =
-        isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
+    final identifier = isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
 
     final value = ' $quotationMark${this.value}$quotationMark';
 

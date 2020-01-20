@@ -15,8 +15,8 @@ class XmlEtd implements XmlNode {
   ///
   /// [children] should contain the raw (unparsed) content of
   /// the ETD. [children] must not be `null`.
-  const XmlEtd(this.name, this.children)
-      : assert(name != null && name.length > 0),
+  XmlEtd(this.name, this.children)
+      : assert(name != null && name.isNotEmpty),
         assert(children != null);
 
   /// The name of the element this ETD pertains to.

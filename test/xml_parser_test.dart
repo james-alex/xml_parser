@@ -163,8 +163,7 @@ void main() async {
   // extracted values to a map of the expected values.
   test('Document Parsing (Library)', () {
     // Parse the test document.
-    final library =
-        XmlDocument.fromString(libraryXml, parseComments: true);
+    final library = XmlDocument.fromString(libraryXml, parseComments: true);
 
     // Check if the correct number of root level nodes were parsed.
     expect(library.children.length, equals(4));
@@ -223,8 +222,8 @@ void main() async {
 
   test('Document Parsing (Verbose)', () {
     // Parse the test document.
-    final verbose = XmlDocument.fromString(
-        verboseXml, parseComments: true, parseCdataAsText: false);
+    final verbose = XmlDocument.fromString(verboseXml,
+        parseComments: true, parseCdataAsText: false);
 
     // Check if the correct number of root level nodes were parsed.
     expect(verbose.children.length, equals(5));
@@ -252,8 +251,8 @@ void main() async {
     }
 
     // Check if the root level comment was parsed as expected.
-    expect(verbose.children[3].toString(),
-        equals(verbose_values.comments.first));
+    expect(
+        verbose.children[3].toString(), equals(verbose_values.comments.first));
 
     // Check if the documents elements were parsed as expected.
     final root = verbose.root;
@@ -315,8 +314,8 @@ void main() async {
     expect(textElements.length, equals(verbose_values.textValues.length));
 
     for (var i = 0; i < textElements.length; i++) {
-      expect(textElements[i].text == verbose_values.textValues[i],
-          equals(true));
+      expect(
+          textElements[i].text == verbose_values.textValues[i], equals(true));
     }
 
     // Extract and validate all `image` elements.
@@ -345,8 +344,8 @@ void main() async {
         equals(true),
       );
 
-      expect(imageElements[i].toString(),
-          equals(verbose_values.imageElements[i]));
+      expect(
+          imageElements[i].toString(), equals(verbose_values.imageElements[i]));
     }
 
     // Extract and validate all comments.
@@ -367,11 +366,10 @@ void main() async {
 
     expect(XmlConditional.parseString(verboseXml).length, equals(1));
 
-    final conditionals =
-        XmlConditional.parseString(verboseXml, global: true);
+    final conditionals = XmlConditional.parseString(verboseXml, global: true);
 
-    expect(conditionals.length,
-        equals(verbose_values.conditionalSections.length));
+    expect(
+        conditionals.length, equals(verbose_values.conditionalSections.length));
 
     for (var i = 0; i < conditionals.length; i++) {
       expect(conditionals[i].toString(),

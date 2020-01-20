@@ -15,7 +15,7 @@ class XmlDoctype implements XmlNode {
   ///
   /// [isSystem] and [isPublic] must not be `null`, and only
   /// one of them may be `true`.
-  const XmlDoctype({
+  XmlDoctype({
     @required this.element,
     this.isSystem,
     this.isPublic,
@@ -23,7 +23,7 @@ class XmlDoctype implements XmlNode {
     this.externalDtdUri,
     this.externalDtd,
     this.internalDtd,
-  })  : assert(element != null && element.length > 0),
+  })  : assert(element != null && element.isNotEmpty),
         assert(isSystem != null),
         assert(!(isPublic && isSystem));
 

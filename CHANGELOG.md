@@ -1,3 +1,7 @@
+## [0.1.2] - January 19, 2020
+
+* Nodes are no longer constant.
+
 ## [0.1.1] - January 16, 2020
 
 * Documentation and formatting changes.

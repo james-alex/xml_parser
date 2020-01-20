@@ -15,10 +15,10 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   /// to an [XmlEntity]. It must not be `null` or empty.
   ///
   /// [children] must not be `null`.
-  const XmlConditional({
+  XmlConditional({
     @required this.condition,
     @required this.children,
-  })  : assert(condition != null && condition.length > 0),
+  })  : assert(condition != null && condition.isNotEmpty),
         assert(children != null);
 
   /// The condition, it should equal `INCLUDE`, `IGNORE`,

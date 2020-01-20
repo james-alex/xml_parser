@@ -21,11 +21,11 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   /// [attributes] must not be `null` but may be empty.
   ///
   /// If the [text] value is supplied, [children] must be `null`.
-  const XmlElement({
+  XmlElement({
     @required this.name,
     this.attributes,
     this.children,
-  }) : assert(name != null && name.length > 0);
+  }) : assert(name != null && name.isNotEmpty);
 
   /// The name of this element.
   final String name;

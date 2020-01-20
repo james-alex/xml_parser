@@ -18,10 +18,10 @@ class XmlProcessingInstruction implements XmlNode {
   /// application parsing the document.
   ///
   /// [target] must not be `null` or empty.
-  const XmlProcessingInstruction({
+  XmlProcessingInstruction({
     @required this.target,
     this.content,
-  }) : assert(target != null && target.length > 0);
+  }) : assert(target != null && target.isNotEmpty);
 
   /// Refers to the application or document type the
   /// processing instruction refers to.

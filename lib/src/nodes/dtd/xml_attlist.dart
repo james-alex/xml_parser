@@ -8,8 +8,10 @@ import '../../xml_node.dart';
 enum XmlAttlistIdentifier {
   /// The Xml ATTLIST `#REQUIRED` delcaration.
   required,
+
   /// The Xml ATTLIST `#IMPLIED` declaration.
   implied,
+
   /// The Xml ATTLIST `#FIXED` declaration.
   fixed,
 }
@@ -34,16 +36,16 @@ class XmlAttlist implements XmlNode {
   /// [type] and [defaultValue] both must not be empty if they are not `null`.
   ///
   /// [identifier] and [defaultValue] are both optional.
-  const XmlAttlist({
+  XmlAttlist({
     @required this.element,
     @required this.attribute,
     @required this.type,
     this.identifier,
     this.defaultValue,
-  })  : assert(element != null && element.length > 0),
-        assert(attribute != null && attribute.length > 0),
-        assert(type == null || type.length > 0),
-        assert(defaultValue == null || defaultValue.length > 0);
+  })  : assert(element != null && element.isNotEmpty),
+        assert(attribute != null && attribute.isNotEmpty),
+        assert(type == null || type.isNotEmpty),
+        assert(defaultValue == null || defaultValue.isNotEmpty);
 
   /// The element the attribute applies to.
   final String element;

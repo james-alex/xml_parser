@@ -12,7 +12,7 @@ class XmlComment implements XmlNode {
   /// A XML comment, delimited with `<!--` and `-->`.
   ///
   /// [value] must not be `null`.
-  const XmlComment(this.value) : assert(value != null);
+  XmlComment(this.value) : assert(value != null);
 
   /// The contents of the comment.
   final String value;

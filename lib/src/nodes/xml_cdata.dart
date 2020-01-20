@@ -18,7 +18,7 @@ class XmlCdata implements XmlNode {
   /// characters that would otherwise be recognized as markup.
   ///
   /// [value] must not be `null`.
-  const XmlCdata(this.value) : assert(value != null);
+  XmlCdata(this.value) : assert(value != null);
 
   /// Plain text value.
   final String value;

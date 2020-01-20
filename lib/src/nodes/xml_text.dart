@@ -21,7 +21,7 @@ class XmlText implements XmlNode {
   /// will be ignored.
   ///
   /// Neither [value] or [isMarkup] may be `null`.
-  const XmlText(this.value, {this.isMarkup = false})
+  XmlText(this.value, {this.isMarkup = false})
       : assert(value != null),
         assert(isMarkup != null);
 

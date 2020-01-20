@@ -16,7 +16,7 @@ class XmlDeclaration implements XmlNode {
   /// All valid XML documents should begin with an XML declaration.
   ///
   /// [version] is required and must not be null.
-  const XmlDeclaration({
+  XmlDeclaration({
     @required this.version,
     this.encoding,
     this.standalone,

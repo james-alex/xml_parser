@@ -86,7 +86,7 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
     if (value.containsKey('attributes')) {
       var attributesAreValid = true;
 
-      value['attributes'].forEach((name,value) {
+      value['attributes'].forEach((name, value) {
         if (!node.hasAttributeWhere(name, value)) {
           print('[_validateNode] XmlElement: '
               '!node.hasAttributeWhere($name, $value)');

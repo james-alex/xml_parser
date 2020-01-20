@@ -33,7 +33,7 @@ export './nodes/xml_text.dart';
 /// The base class for all XML nodes.
 @immutable
 abstract class XmlNode {
-  const XmlNode._();
+  XmlNode._();
 
   /// Returns this node as a formatted string.
   ///
@@ -278,13 +278,11 @@ abstract class XmlNode {
                   type.endsWith(';'))) {
             setNode(Delimiters.conditional);
             if (node != null) {
-              xmlNode = XmlConditional.fromString(
-                node,
-                parseCharacterEntities: parseCharacterEntities,
-                parseComments: true,
-                trimWhitespace: false,
-                parseCdataAsText: parseCdataAsText
-              );
+              xmlNode = XmlConditional.fromString(node,
+                  parseCharacterEntities: parseCharacterEntities,
+                  parseComments: true,
+                  trimWhitespace: false,
+                  parseCdataAsText: parseCdataAsText);
             }
           } else if (type == 'NOTATION') {
             setNode(Delimiters.notation);
@@ -326,13 +324,11 @@ abstract class XmlNode {
           }
 
           if (node != null) {
-            xmlNode = XmlElement.fromString(
-              node,
-              parseCharacterEntities: parseCharacterEntities,
-              parseComments: true,
-              trimWhitespace: false,
-              parseCdataAsText: parseCdataAsText
-            );
+            xmlNode = XmlElement.fromString(node,
+                parseCharacterEntities: parseCharacterEntities,
+                parseComments: true,
+                trimWhitespace: false,
+                parseCdataAsText: parseCdataAsText);
           }
         }
       }

@@ -19,13 +19,13 @@ class XmlNotation implements XmlNode {
   ///
   /// [uri] must not be `null` if [isSystem] is `true`, but is optional
   /// if [isPublic] is `true`.
-  const XmlNotation({
+  XmlNotation({
     this.name,
     this.isSystem = false,
     this.isPublic = false,
     this.publicId,
     this.uri,
-  })  : assert(name != null && name.length > 0),
+  })  : assert(name != null && name.isNotEmpty),
         assert((isSystem && !isPublic) || (!isSystem && isPublic)),
         assert(publicId == null || isPublic),
         assert(!isSystem || uri != null);
