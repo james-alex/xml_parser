@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../helpers/string_parser.dart';
@@ -9,6 +10,7 @@ import '../xml_node.dart';
 /// characters that would otherwise be recognized as markup.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-cdata-sect
+@immutable
 class XmlCdata implements XmlNode {
   /// A CDATA Section.
   ///
@@ -34,7 +36,7 @@ class XmlCdata implements XmlNode {
     assert(indent != null);
     // TODO: assert(lineLength == null || lineLength > 0);
 
-    String cdata = helpers.formatLine(toString(), nestingLevel, indent);
+    var cdata = helpers.formatLine(toString(), nestingLevel, indent);
 
     // TODO: Handle lineLength
 
@@ -102,7 +104,7 @@ class XmlCdata implements XmlNode {
   static XmlCdata _getCdata(RegExpMatch cdata) {
     assert(cdata != null);
 
-    final String value = cdata.namedGroup('value')?.trim();
+    final value = cdata.namedGroup('value')?.trim();
 
     if (value == null) return null;
 
@@ -113,7 +115,7 @@ class XmlCdata implements XmlNode {
   static final StringParser<XmlCdata> _parser = StringParser<XmlCdata>();
 
   @override
-  operator ==(o) => o is XmlCdata && value == o.value;
+  bool operator ==(Object o) => o is XmlCdata && value == o.value;
 
   @override
   int get hashCode => toString().hashCode;

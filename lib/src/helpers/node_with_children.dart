@@ -1,9 +1,10 @@
+import 'package:meta/meta.dart';
 import '../xml_node.dart';
 
-/// Contains methods to be implemented by classes containing
-/// elements nested within their [children] for retrieving and
-/// traversing those elements.
+/// Base class for nodes with children that can contain [XmlElement]s.
+@immutable
 abstract class NodeWithChildren {
+  /// Base class for nodes with children that can contain [XmlElement]s.
   const NodeWithChildren();
 
   /// The list of [children] each getter and method references.
@@ -18,7 +19,7 @@ abstract class NodeWithChildren {
   XmlElement get firstChild {
     if (children == null) return null;
 
-    for (XmlNode child in children) {
+    for (var child in children) {
       if (child is XmlElement) return child;
     }
 
@@ -35,9 +36,9 @@ abstract class NodeWithChildren {
 
     if (children == null) return null;
 
-    int childCount = 0;
+    var childCount = 0;
 
-    for (XmlNode child in children) {
+    for (var child in children) {
       if (child is XmlElement) {
         if (index == childCount) {
           return child;
@@ -56,7 +57,7 @@ abstract class NodeWithChildren {
   XmlElement get lastChild {
     if (children == null) return null;
 
-    for (XmlNode child in children.reversed) {
+    for (var child in children.reversed) {
       if (child is XmlElement) return child;
     }
 
@@ -74,7 +75,7 @@ abstract class NodeWithChildren {
     elementName = elementName.toLowerCase();
 
     return children.firstWhere(
-      (XmlNode child) =>
+      (child) =>
           child is XmlElement && child.name.toLowerCase() == elementName,
       orElse: () => null,
     );
@@ -103,7 +104,7 @@ abstract class NodeWithChildren {
     elementName = elementName.toLowerCase();
 
     return children.lastWhere(
-      (XmlNode child) =>
+      (child) =>
           child is XmlElement && child.name.toLowerCase() == elementName,
       orElse: () => null,
     );
@@ -385,7 +386,8 @@ abstract class NodeWithChildren {
     );
   }
 
-  /// Returns `true` if this element contains a direct child named [elementName].
+  /// Returns `true` if this element contains a direct
+  /// child named [elementName].
   ///
   /// [elementName] must not be `null` or empty.
   bool hasChild(String elementName) {
@@ -395,7 +397,7 @@ abstract class NodeWithChildren {
 
     elementName = elementName.toLowerCase();
 
-    for (XmlNode child in children) {
+    for (var child in children) {
       if (child is XmlElement && child.name.toLowerCase() == elementName) {
         return true;
       }
@@ -819,11 +821,11 @@ abstract class NodeWithChildren {
 
     name = name?.toLowerCase();
 
-    final List<XmlElement> elements = List<XmlElement>();
+    final elements = <XmlElement>[];
 
-    int elementCount = 0;
+    var elementCount = 0;
 
-    for (XmlNode child in (reversed) ? this.children.reversed : this.children) {
+    for (var child in reversed ? this.children.reversed : this.children) {
       if (child is XmlElement) {
         if (compareValues(
           child,
@@ -849,7 +851,7 @@ abstract class NodeWithChildren {
         if (!global) continue;
 
         if (child.children != null && child.children.isNotEmpty) {
-          final List<XmlElement> nestedChildren = child.getElementsWhere(
+          final nestedChildren = child.getElementsWhere(
             name: name,
             id: id,
             attributeNames: attributeNames,
@@ -865,7 +867,7 @@ abstract class NodeWithChildren {
           );
 
           if (nestedChildren != null) {
-            for (XmlElement nestedChild in nestedChildren) {
+            for (var nestedChild in nestedChildren) {
               if (elementCount >= start) elements.add(nestedChild);
 
               elementCount++;
@@ -949,7 +951,7 @@ abstract class NodeWithChildren {
 
     name = name?.toLowerCase();
 
-    for (XmlNode child in children) {
+    for (var child in children) {
       if (child is XmlElement) {
         if (compareValues(
           child,
@@ -968,7 +970,7 @@ abstract class NodeWithChildren {
 
         if (!global) continue;
 
-        final bool elementIsNested = child.hasElementWhere(
+        final elementIsNested = child.hasElementWhere(
           name: name,
           id: id,
           attributeNames: attributeNames,
@@ -1055,9 +1057,9 @@ abstract class NodeWithChildren {
         }
 
         if (attributeNames != null && attributeNames.isNotEmpty) {
-          int hasAttributes = (matchAllAttributes) ? attributeNames.length : 1;
+          var hasAttributes = (matchAllAttributes) ? attributeNames.length : 1;
 
-          for (String attributeName in attributeNames) {
+          for (var attributeName in attributeNames) {
             if (element.hasAttribute(attributeName)) {
               hasAttributes--;
             }
@@ -1069,9 +1071,9 @@ abstract class NodeWithChildren {
         }
 
         if (attributes != null) {
-          int hasAttributes = (matchAllAttributes) ? attributes.length : 1;
+          var hasAttributes = (matchAllAttributes) ? attributes.length : 1;
 
-          for (XmlAttribute attribute in attributes) {
+          for (var attribute in attributes) {
             if (element.hasAttributeWhere(attribute.name, attribute.value)) {
               hasAttributes--;
             }
@@ -1090,11 +1092,11 @@ abstract class NodeWithChildren {
           return false;
         }
 
-        int hasChildren =
+        var hasChildren =
             (matchAllChildren || childrenMustBeIdentical) ? children.length : 1;
 
-        for (int i = 0; i < children.length; i++) {
-          final XmlNode child = children[i];
+        for (var i = 0; i < children.length; i++) {
+          final child = children[i];
 
           if (child is XmlElement) {
             if (childrenMustBeIdentical) {

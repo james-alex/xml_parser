@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import '../../helpers/delimiters.dart';
 import '../../helpers/helpers.dart' as helpers;
 import '../../helpers/string_parser.dart';
@@ -6,6 +7,7 @@ import '../../xml_node.dart';
 /// An Element Type Declaration.
 ///
 /// See: https://www.w3.org/TR/xml/#elemdecls
+@immutable
 class XmlEtd implements XmlNode {
   /// An Element Type Declaration.
   ///
@@ -36,7 +38,7 @@ class XmlEtd implements XmlNode {
     assert(indent != null);
     // TODO: assert(lineLength == null || lineLength > 0);
 
-    String etd = helpers.formatLine(toString(), nestingLevel, indent);
+    var etd = helpers.formatLine(toString(), nestingLevel, indent);
 
     // TODO: Handle lineLength
 
@@ -105,11 +107,11 @@ class XmlEtd implements XmlNode {
   static XmlEtd _getEtd(RegExpMatch etd) {
     assert(etd != null);
 
-    final String name = etd.namedGroup('name');
+    final name = etd.namedGroup('name');
 
     if (name == null) return null;
 
-    final String children = etd.namedGroup('children').trim();
+    final children = etd.namedGroup('children').trim();
 
     if (children == null || children.isEmpty) return null;
 
@@ -120,7 +122,8 @@ class XmlEtd implements XmlNode {
   static final StringParser<XmlEtd> _parser = StringParser<XmlEtd>();
 
   @override
-  operator ==(o) => o is XmlEtd && name == o.name && children == o.children;
+  bool operator ==(Object o) =>
+      o is XmlEtd && name == o.name && children == o.children;
 
   @override
   int get hashCode => name.hashCode ^ children.hashCode;

@@ -1,4 +1,5 @@
 import 'package:html_character_entities/html_character_entities.dart';
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../xml_node.dart';
@@ -7,6 +8,7 @@ import '../xml_node.dart';
 ///
 /// This node is should be nested within an element,
 /// but the parser doesn't require it.
+@immutable
 class XmlText implements XmlNode {
   /// A plain text value.
   ///
@@ -72,12 +74,12 @@ class XmlText implements XmlNode {
     // TODO: assert(lineLength == null || lineLength > 0);
     assert(encodeCharacterEntities != null);
 
-    final String value = toString(
+    final value = toString(
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
     );
 
-    String text = helpers.formatLine(value, nestingLevel, indent);
+    var text = helpers.formatLine(value, nestingLevel, indent);
 
     // TODO: Handle lineLength
 
@@ -157,15 +159,15 @@ class XmlText implements XmlNode {
       return <XmlText>[XmlText(string)];
     }
 
-    final List<XmlText> text = List<XmlText>();
+    final text = <XmlText>[];
 
-    int textCount = 0;
+    var textCount = 0;
 
     // Capture any text found before the first node.
-    final int firstNode = string.indexOf('<');
+    final firstNode = string.indexOf('<');
 
     if (firstNode >= 0) {
-      String prependedText = string.substring(0, firstNode).trim();
+      var prependedText = string.substring(0, firstNode).trim();
 
       if (prependedText.isNotEmpty) {
         if (parseCharacterEntities) {
@@ -187,10 +189,10 @@ class XmlText implements XmlNode {
     }
 
     // Capture any text found in/between nodes.
-    final Iterable<RegExpMatch> matches = Delimiters.text.allMatches(string);
+    final matches = Delimiters.text.allMatches(string);
 
-    for (RegExpMatch match in matches) {
-      String matchedText = match.namedGroup('text');
+    for (var match in matches) {
+      var matchedText = match.namedGroup('text');
 
       if (matchedText.isEmpty) continue;
 
@@ -209,10 +211,10 @@ class XmlText implements XmlNode {
 
     // Capture any text found after the last node.
     if (stop == null || textCount < stop) {
-      final int lastNode = string.lastIndexOf('>');
+      final lastNode = string.lastIndexOf('>');
 
       if (lastNode >= 0) {
-        String appendedText = string.substring(lastNode + 1).trim();
+        var appendedText = string.substring(lastNode + 1).trim();
 
         if (appendedText.isNotEmpty) {
           if (parseCharacterEntities) {
@@ -230,7 +232,7 @@ class XmlText implements XmlNode {
   }
 
   @override
-  operator ==(o) => o is XmlText && value == o.value;
+  bool operator ==(Object o) => o is XmlText && value == o.value;
 
   @override
   int get hashCode => toString().hashCode;

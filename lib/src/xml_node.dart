@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
+import 'package:meta/meta.dart';
 import './helpers/delimiters.dart';
 import './helpers/helpers.dart' as helpers;
-import './xml_document.dart';
 import './nodes/dtd/xml_attlist.dart';
 import './nodes/dtd/xml_etd.dart';
 import './nodes/xml_cdata.dart';
@@ -14,11 +14,12 @@ import './nodes/xml_entity.dart';
 import './nodes/xml_notation.dart';
 import './nodes/xml_processing_instruction.dart';
 import './nodes/xml_text.dart';
+import './xml_document.dart';
 
 export './nodes/dtd/xml_attlist.dart';
 export './nodes/dtd/xml_etd.dart';
-export './nodes/xml_cdata.dart';
 export './nodes/xml_attribute.dart';
+export './nodes/xml_cdata.dart';
 export './nodes/xml_comment.dart';
 export './nodes/xml_conditional.dart';
 export './nodes/xml_declaration.dart';
@@ -30,6 +31,7 @@ export './nodes/xml_processing_instruction.dart';
 export './nodes/xml_text.dart';
 
 /// The base class for all XML nodes.
+@immutable
 abstract class XmlNode {
   const XmlNode._();
 
@@ -144,9 +146,9 @@ abstract class XmlNode {
 
     string = string.trim();
 
-    final List<XmlNode> nodes = List<XmlNode>();
+    final nodes = <XmlNode>[];
 
-    int nodeCount = 0;
+    var nodeCount = 0;
 
     while (string.contains(_delimiter)) {
       RegExpMatch delimiter;
@@ -163,7 +165,7 @@ abstract class XmlNode {
       setNode(_delimiter);
 
       if (delimiter.start > 0) {
-        final String text = string.substring(0, delimiter.start).trimRight();
+        final text = string.substring(0, delimiter.start).trimRight();
 
         if (text.isNotEmpty) {
           nodes.add(XmlText(text));
@@ -214,7 +216,7 @@ abstract class XmlNode {
           xmlNode = XmlComment.fromString(node, trimWhitespace: false);
         } else {
           // If it's a markup delimiter...
-          final String type = _markupStartDelimiter
+          final type = _markupStartDelimiter
               .firstMatch(node)
               .namedGroup('type')
               .toUpperCase();
@@ -310,9 +312,9 @@ abstract class XmlNode {
         }
 
         // Capture the element's tag.
-        final RegExpMatch tag = Delimiters.elementTag.firstMatch(node);
+        final tag = Delimiters.elementTag.firstMatch(node);
 
-        final String tagName = tag.namedGroup('tagName');
+        final tagName = tag.namedGroup('tagName');
 
         // Only parse opening tags. If a closing tag was found, it was found
         // without a corresponding opening tag and shouldn't be parsed.
@@ -415,17 +417,17 @@ abstract class XmlNode {
     assert(start != null && start >= 0);
     assert(stop == null || stop >= start);
 
-    final Response response = await get(uri);
+    final response = await get(uri);
 
     if (response.statusCode != 200) {
       return null;
     }
 
-    final String document = response.body;
+    final document = response.body;
 
     if (returnNodesOfType != null) {
       if (returnNodesOfType.length == 1) {
-        final Type nodeType = returnNodesOfType.first;
+        final nodeType = returnNodesOfType.first;
 
         if (nodeType == XmlDocument) {
           return XmlDocument.fromString(

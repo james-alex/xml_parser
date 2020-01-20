@@ -1,4 +1,5 @@
 import 'package:html_character_entities/html_character_entities.dart';
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../xml_node.dart';
@@ -6,6 +7,7 @@ import '../xml_node.dart';
 /// A XML comment, delimited with `<!--` and `-->`.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-comments
+@immutable
 class XmlComment implements XmlNode {
   /// A XML comment, delimited with `<!--` and `-->`.
   ///
@@ -28,7 +30,7 @@ class XmlComment implements XmlNode {
     assert(indent != null);
     // TODO: assert(lineLength == null || lineLength > 0);
 
-    String comment = helpers.formatLine(toString(), nestingLevel, indent);
+    var comment = helpers.formatLine(toString(), nestingLevel, indent);
 
     // TODO: Handle lineLength
 
@@ -51,7 +53,7 @@ class XmlComment implements XmlNode {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final RegExpMatch comment = Delimiters.comment.firstMatch(string);
+    final comment = Delimiters.comment.firstMatch(string);
 
     if (comment == null) return null;
 
@@ -77,15 +79,14 @@ class XmlComment implements XmlNode {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final List<RegExpMatch> matches =
-        Delimiters.comment.allMatches(string).toList();
+    final matches = Delimiters.comment.allMatches(string).toList();
 
     if (matches.isEmpty) return null;
 
-    final List<XmlComment> comments = List<XmlComment>();
+    final comments = <XmlComment>[];
 
-    for (int i = start; i < matches.length; i++) {
-      String comment = matches[i].namedGroup('value');
+    for (var i = start; i < matches.length; i++) {
+      var comment = matches[i].namedGroup('value');
 
       if (parseCharacterEntities) {
         comment = HtmlCharacterEntities.decode(comment);
@@ -100,7 +101,7 @@ class XmlComment implements XmlNode {
   }
 
   @override
-  operator ==(o) => o is XmlComment && value == o.value;
+  bool operator ==(Object o) => o is XmlComment && value == o.value;
 
   @override
   int get hashCode => toString().hashCode;

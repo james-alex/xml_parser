@@ -1,11 +1,13 @@
-import './helpers/node_with_children.dart';
+import 'package:meta/meta.dart';
 import './helpers/helpers.dart' as helpers;
+import './helpers/node_with_children.dart';
 import './xml_node.dart';
 
 /// A XML document.
 ///
 /// It contains optional XML Declaration and Document Type Declarations,
 /// and a root element that contains every other element nested within it.
+@immutable
 class XmlDocument extends NodeWithChildren {
   /// A XML document.
   ///
@@ -24,13 +26,13 @@ class XmlDocument extends NodeWithChildren {
 
   /// The raw value of the XML document declaration.
   XmlDeclaration get xmlDeclaration => children.firstWhere(
-        (XmlNode child) => child.runtimeType == XmlDeclaration,
+        (child) => child.runtimeType == XmlDeclaration,
         orElse: () => null,
       );
 
   /// The XML document type definition.
   XmlDoctype get doctype => children.firstWhere(
-        (XmlNode child) => child.runtimeType == XmlDoctype,
+        (child) => child.runtimeType == XmlDoctype,
         orElse: () => null,
       );
 
@@ -39,7 +41,7 @@ class XmlDocument extends NodeWithChildren {
   /// In a valid XML document, all elements besides the
   /// root element are nested within the root element.
   XmlElement get root => children.firstWhere(
-        (XmlNode node) => node.runtimeType == XmlElement,
+        (node) => node.runtimeType == XmlElement,
         orElse: () => null,
       );
 
@@ -54,8 +56,8 @@ class XmlDocument extends NodeWithChildren {
     if ((xmlDeclaration.standalone != null && xmlDeclaration.standalone) ||
         children.isEmpty) return;
 
-    for (int i = 0; i < children.length; i++) {
-      final XmlNode child = children[i];
+    for (var i = 0; i < children.length; i++) {
+      final child = children[i];
 
       if (child is XmlConditional) {
         await child.loadExternalDtd();
@@ -115,14 +117,14 @@ class XmlDocument extends NodeWithChildren {
   }) {
     assert(indent != null);
 
-    String document = '';
+    var document = '';
 
-    children.forEach((XmlNode node) {
+    for (var node in children) {
       document += node.toFormattedString(
         nestingLevel: nestingLevel,
         indent: indent,
       );
-    });
+    }
 
     return document;
   }
@@ -172,7 +174,7 @@ class XmlDocument extends NodeWithChildren {
 
     if (document.isEmpty) return null;
 
-    final List<XmlNode> nodes = XmlNode.parseString(
+    final nodes = XmlNode.parseString(
       document,
       parseCharacterEntities: parseCharacterEntities,
       parseComments: true,
@@ -227,16 +229,18 @@ class XmlDocument extends NodeWithChildren {
   }
 
   @override
-  bool operator ==(o) {
-    if (o is! XmlDocument) return false;
+  bool operator ==(Object o) {
+    if (o is XmlDocument) {
+      if (children.length != o.children.length) return false;
 
-    if (children.length != o.children.length) return false;
+      for (var i = 0; i < children.length; i++) {
+        if (children[i] != o.children[i]) return false;
+      }
 
-    for (int i = 0; i < children.length; i++) {
-      if (children[i] != o.nodes[i]) return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   @override

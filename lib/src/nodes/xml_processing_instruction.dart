@@ -10,6 +10,7 @@ import '../xml_node.dart';
 /// application parsing the document.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-pi
+@immutable
 class XmlProcessingInstruction implements XmlNode {
   /// An XML Processing Instruction.
   ///
@@ -42,7 +43,7 @@ class XmlProcessingInstruction implements XmlNode {
     assert(indent != null);
     // TODO: assert(lineLength == null || lineLength > 0);
 
-    String processingInstruction =
+    var processingInstruction =
         helpers.formatLine(toString(), nestingLevel, indent);
 
     // TODO: Handle lineLength
@@ -114,11 +115,11 @@ class XmlProcessingInstruction implements XmlNode {
   ) {
     assert(processingInstruction != null);
 
-    final String target = processingInstruction.namedGroup('target')?.trim();
+    final target = processingInstruction.namedGroup('target')?.trim();
 
     if (target == null || target.isEmpty) return null;
 
-    final String content = processingInstruction.namedGroup('content')?.trim();
+    final content = processingInstruction.namedGroup('content')?.trim();
 
     return XmlProcessingInstruction(
       target: target,
@@ -131,7 +132,7 @@ class XmlProcessingInstruction implements XmlNode {
       StringParser<XmlProcessingInstruction>();
 
   @override
-  operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlProcessingInstruction &&
       target == o.target &&
       content == o.content;

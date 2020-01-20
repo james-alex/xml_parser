@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../helpers/string_parser.dart';
@@ -6,6 +7,7 @@ import '../xml_node.dart';
 /// A Notation Declaration, as known as an unparsed entity.
 ///
 /// See: https://www.w3.org/TR/xml/#Notations
+@immutable
 class XmlNotation implements XmlNode {
   /// A notation declaration, as known as an unparsed entity.
   ///
@@ -48,16 +50,16 @@ class XmlNotation implements XmlNode {
   String toString([bool doubleQuotes = true]) {
     assert(doubleQuotes != null);
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = doubleQuotes ? '"' : '\'';
 
-    final String identifier = (isSystem) ? 'SYSTEM' : 'PUBLIC';
+    final identifier = isSystem ? 'SYSTEM' : 'PUBLIC';
 
-    final String publicId = (this.publicId != null)
+    final publicId = (this.publicId != null)
         ? ' $quotationMark${this.publicId}$quotationMark'
         : '';
 
-    final String uri =
-        (this.uri != null) ? ' $quotationMark${this.uri}$quotationMark' : '';
+    final uri =
+        this.uri != null ? ' $quotationMark${this.uri}$quotationMark' : '';
 
     return '<!NOTATION $name $identifier$publicId$uri>';
   }
@@ -74,7 +76,7 @@ class XmlNotation implements XmlNode {
     // TODO: assert(lineLength == null || lineLength > 0);
     assert(doubleQuotes != null);
 
-    String notation =
+    var notation =
         helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
 
     // TODO: Handle lineLength
@@ -144,14 +146,14 @@ class XmlNotation implements XmlNode {
   static XmlNotation _getNotation(RegExpMatch notation) {
     assert(notation != null);
 
-    final String name = notation.namedGroup('name');
+    final name = notation.namedGroup('name');
 
     if (name == null) return null;
 
-    final String identifier = notation.namedGroup('identifier').toUpperCase();
+    final identifier = notation.namedGroup('identifier').toUpperCase();
 
-    final bool isPublic = identifier == 'PUBLIC';
-    final bool isSystem = identifier == 'SYSTEM';
+    final isPublic = identifier == 'PUBLIC';
+    final isSystem = identifier == 'SYSTEM';
 
     if (!isPublic && !isSystem) return null;
 
@@ -190,7 +192,7 @@ class XmlNotation implements XmlNode {
   static final StringParser<XmlNotation> _parser = StringParser<XmlNotation>();
 
   @override
-  operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlNotation &&
       name == o.name &&
       isSystem == o.isSystem &&

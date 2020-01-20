@@ -7,6 +7,7 @@ import '../xml_node.dart';
 /// A XML DocType declaration.
 ///
 /// See: https://www.w3.org/TR/xml/#NT-doctypedecl
+@immutable
 class XmlDoctype implements XmlNode {
   /// A XML DocType declaration.
   ///
@@ -119,19 +120,19 @@ class XmlDoctype implements XmlNode {
     assert(encodeCharacterEntities != null);
     assert(doubleQuotes != null);
 
-    final String doctype = _getTag(doubleQuotes);
+    final doctype = _getTag(doubleQuotes);
 
-    String internalDtd = '';
+    var internalDtd = '';
 
     if (this.internalDtd != null) {
-      internalDtd = ' [' +
-          helpers.childrenToString(
-            children: this.internalDtd,
-            encodeCharacterEntities: encodeCharacterEntities,
-            encodeCharacters: encodeCharacters,
-            doubleQuotes: doubleQuotes,
-          ) +
-          ']';
+      final children = helpers.childrenToString(
+        children: this.internalDtd,
+        encodeCharacterEntities: encodeCharacterEntities,
+        encodeCharacters: encodeCharacters,
+        doubleQuotes: doubleQuotes,
+      );
+
+      internalDtd = ' [$children]';
     }
 
     return '$doctype$internalDtd>';
@@ -152,10 +153,10 @@ class XmlDoctype implements XmlNode {
     assert(encodeCharacterEntities != null);
     assert(doubleQuotes != null);
 
-    String doctype = _getTag(doubleQuotes);
+    var doctype = _getTag(doubleQuotes);
 
-    if (this.internalDtd != null) {
-      doctype += ' [\r\n';
+    if (internalDtd != null) {
+      doctype += ' [\n';
 
       doctype += helpers.formatChildren(
         children: internalDtd,
@@ -166,10 +167,10 @@ class XmlDoctype implements XmlNode {
         doubleQuotes: doubleQuotes,
       );
 
-      doctype += (indent * nestingLevel) + ']';
+      doctype += '${(indent * nestingLevel)}]';
     }
 
-    doctype += '>\r\n';
+    doctype += '>\n';
 
     // TODO: Handle linelength
 
@@ -179,12 +180,12 @@ class XmlDoctype implements XmlNode {
   String _getTag(bool doubleQuotes) {
     assert(doubleQuotes != null);
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = (doubleQuotes) ? '"' : '\'';
 
-    final String externalDtdDeclaration =
-        (this.isSystem) ? ' SYSTEM' : (this.isPublic) ? ' PUBLIC' : '';
+    final externalDtdDeclaration =
+        isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
 
-    final String externalDtdName = (this.externalDtdName != null)
+    final externalDtdName = (this.externalDtdName != null)
         ? ' $quotationMark${this.externalDtdName}$quotationMark'
         : '';
 
@@ -270,41 +271,41 @@ class XmlDoctype implements XmlNode {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final List<XmlDoctype> doctypes = List<XmlDoctype>();
+    final doctypes = <XmlDoctype>[];
 
-    final Iterable<RegExpMatch> tags = _delimiter.allMatches(string);
+    final tags = _delimiter.allMatches(string);
 
     if (tags == null || start >= tags.length) return null;
 
-    for (RegExpMatch tag in tags) {
+    for (var tag in tags) {
       if (tag.namedGroup('isMarkup') != '!') continue;
 
       if (tag.namedGroup('doctype') != 'DOCTYPE') continue;
 
-      final RegExpMatch doctype =
+      final doctype =
           Delimiters.doctype.firstMatch(string.substring(tag.start, tag.end));
 
-      final String element = doctype.namedGroup('name');
+      final element = doctype.namedGroup('name');
 
       if (element == null) continue;
 
       // Capture and parse the external DTD values, if thye exist.
-      final String identifier = doctype.namedGroup('identifier');
+      final identifier = doctype.namedGroup('identifier');
 
       String externalDtdName;
 
-      String externalDtd = doctype.namedGroup('externalDtd');
+      var externalDtd = doctype.namedGroup('externalDtd');
 
       if (externalDtd != null) {
-        final List<RegExpMatch> externalDtdParts =
+        final externalDtdParts =
             RegExp('".*?"|\'.?\'').allMatches(externalDtd).toList();
 
         if (externalDtdParts.length > 1) {
-          final RegExpMatch name = externalDtdParts.first;
+          final name = externalDtdParts.first;
 
           externalDtdName = externalDtd.substring(name.start + 1, name.end - 1);
 
-          final RegExpMatch path = externalDtdParts[1];
+          final path = externalDtdParts[1];
 
           externalDtd = externalDtd.substring(path.start + 1, path.start - 1);
         } else {
@@ -313,7 +314,7 @@ class XmlDoctype implements XmlNode {
       }
 
       // Caputre and parse the internal DTD value, if it exists.
-      final String internalDtdValue = doctype.namedGroup('internalDtd');
+      final internalDtdValue = doctype.namedGroup('internalDtd');
 
       List<XmlNode> internalDtd;
 
@@ -350,46 +351,57 @@ class XmlDoctype implements XmlNode {
   );
 
   @override
-  operator ==(o) {
-    // Compare types
-    if (!(o is XmlDoctype)) return false;
+  bool operator ==(Object o) {
+    if (o is XmlDoctype) {
+      // Compare names
+      if (element != o.element) return false;
 
-    // Compare names
-    if (element != o.element) return false;
+      // Compare external flags.
+      if (isSystem != o.isSystem) return false;
 
-    // Compare external flags.
-    if (isSystem != o.isSystem) return false;
+      if (isPublic != o.isPublic) return false;
 
-    if (isPublic != o.isPublic) return false;
+      // Compare external DTD values.
+      if (externalDtdName != o.externalDtdName) return false;
 
-    // Compare external DTD values.
-    if (externalDtdName != o.externalDtdName) return false;
+      if (externalDtdUri != o.externalDtdUri) return false;
 
-    if (externalDtdUri != o.externalDtdUri) return false;
+      if (externalDtd == null && o.externalDtd != null) return false;
 
-    if (externalDtd == null && o.externalDtd != null) return false;
+      if (externalDtd != null && o.externalDtd == null) return false;
 
-    if (externalDtd != null && o.externalDtd == null) return false;
+      if (externalDtd != null) {
+        if (externalDtd.length != o.externalDtd.length) return false;
 
-    if (externalDtd != null) {
-      if (externalDtd.length != o.externalDtd.length) return false;
-
-      for (int i = 0; i < externalDtd.length; i++) {
-        if (externalDtd[i] != o.externalDtd[i]) return false;
+        for (var i = 0; i < externalDtd.length; i++) {
+          if (externalDtd[i] != o.externalDtd[i]) return false;
+        }
       }
+
+      // Compare internal DTD values.
+      if (internalDtd != null && o.internalDtd == null) return false;
+
+      if (internalDtd == null && o.internalDtd != null) return false;
+
+      if (internalDtd != null) {
+        for (var i = 0; i < internalDtd.length; i++) {
+          if (internalDtd[i] != o.internalDtd[i]) return false;
+        }
+      }
+
+      return true;
     }
 
-    // Compare internal DTD values.
-    if (internalDtd != null && o.internalDtd == null) return false;
-
-    if (internalDtd == null && o.internalDtd != null) return false;
-
-    if (internalDtd != null) {
-      for (int i = 0; i < internalDtd.length; i++) {
-        if (internalDtd[i] != o.internalDtd[i]) return false;
-      }
-    }
-
-    return true;
+    return false;
   }
+
+  @override
+  int get hashCode =>
+      element.hashCode ^
+      isSystem.hashCode ^
+      isPublic.hashCode ^
+      externalDtdName.hashCode ^
+      externalDtdUri.hashCode ^
+      externalDtd.hashCode ^
+      internalDtd.hashCode;
 }

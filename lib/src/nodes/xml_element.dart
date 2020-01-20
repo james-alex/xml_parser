@@ -2,8 +2,8 @@ import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../helpers/node_with_children.dart';
-import './xml_attribute.dart';
 import '../xml_node.dart';
+import './xml_attribute.dart';
 
 /// A XML element.
 ///
@@ -12,6 +12,7 @@ import '../xml_node.dart';
 /// which case only the [text] value is supplied.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-logical-struct
+@immutable
 class XmlElement extends NodeWithChildren implements XmlNode {
   /// A XML element.
   ///
@@ -32,10 +33,8 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   /// The `id` attribute of this element.
   String get id {
     return attributes
-        ?.firstWhere(
-          (XmlAttribute attribute) => attribute.name.toLowerCase() == 'id',
-          orElse: () => null,
-        )
+        ?.firstWhere((attribute) => attribute.name.toLowerCase() == 'id',
+            orElse: () => null)
         ?.value
         ?.toLowerCase();
   }
@@ -51,7 +50,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
 
     attributeName = attributeName.toLowerCase();
 
-    for (XmlAttribute attribute in attributes) {
+    for (var attribute in attributes) {
       if (attribute.name.toLowerCase() == attributeName) {
         return true;
       }
@@ -69,7 +68,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
 
     attributeName = attributeName.toLowerCase();
 
-    for (XmlAttribute attribute in attributes) {
+    for (var attribute in attributes) {
       if (attribute.name.toLowerCase() == attributeName &&
           attribute.value == attributeValue) {
         return true;
@@ -88,7 +87,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
 
     attributeName = attributeName.toLowerCase();
 
-    for (XmlAttribute attribute in attributes) {
+    for (var attribute in attributes) {
       if (attribute.name.toLowerCase() == attributeName) {
         return attribute.value;
       }
@@ -106,13 +105,15 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   ///
   /// Returns `null` if no text nodes exist.
   String get text {
-    String text = '';
+    if (children == null) return null;
 
-    children?.forEach((XmlNode child) {
+    var text = '';
+
+    for (var child in children) {
       if (child is XmlText) {
         text += ((text.isEmpty) ? '' : ' ') + child.value;
       }
-    });
+    }
 
     if (text.isEmpty) return null;
 
@@ -210,8 +211,8 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   Future<void> loadExternalDtd() async {
     if (children == null || children.isEmpty) return;
 
-    for (int i = 0; i < children.length; i++) {
-      final XmlNode child = children[i];
+    for (var i = 0; i < children.length; i++) {
+      final child = children[i];
 
       if (child is XmlConditional) {
         await child.loadExternalDtd();
@@ -252,7 +253,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     assert(doubleQuotes != null);
     assert(encodeCharacterEntities != null);
 
-    String element = _buildTag(
+    var element = _buildTag(
       doubleQuotes: doubleQuotes,
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
@@ -287,13 +288,13 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     assert(encodeCharacterEntities != null);
     assert(doubleQuotes != null);
 
-    final String tag = _buildTag(
+    final tag = _buildTag(
       doubleQuotes: doubleQuotes,
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
     );
 
-    String element = helpers.formatLine(tag, nestingLevel, indent);
+    var element = helpers.formatLine(tag, nestingLevel, indent);
 
     if (children != null) {
       element += helpers.formatChildren(
@@ -321,24 +322,26 @@ class XmlElement extends NodeWithChildren implements XmlNode {
     assert(doubleQuotes != null);
     assert(encodeCharacterEntities != null);
 
-    String tag = '<' + name;
+    var tag = '<$name';
 
     if (id != null) {
-      final String quotationMark = (doubleQuotes) ? '"' : '\'';
+      final quotationMark = (doubleQuotes) ? '"' : '\'';
 
       tag += ' id=$quotationMark$id$quotationMark';
     }
 
-    attributes?.forEach((XmlAttribute attribute) {
-      if (id != null && attribute.name.toLowerCase() == 'id') return;
+    if (attributes != null) {
+      for (var attribute in attributes) {
+        if (id != null && attribute.name.toLowerCase() == 'id') continue;
 
-      tag += ' ' +
-          attribute.toString(
-            doubleQuotes: doubleQuotes,
-            encodeCharacterEntities: encodeCharacterEntities,
-            encodeCharacters: encodeCharacters ?? '&<>"\'',
-          );
-    });
+        tag += ' ';
+        tag += attribute.toString(
+          doubleQuotes: doubleQuotes,
+          encodeCharacterEntities: encodeCharacterEntities,
+          encodeCharacters: encodeCharacters ?? '&<>"\'',
+        );
+      }
+    }
 
     if (children != null) {
       tag += '>';
@@ -506,36 +509,36 @@ class XmlElement extends NodeWithChildren implements XmlNode {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final List<XmlElement> elements = List<XmlElement>();
+    final elements = <XmlElement>[];
 
-    int elementCount = 0;
+    var elementCount = 0;
 
     while (string.contains(Delimiters.elementTag)) {
-      RegExpMatch tag = Delimiters.elementTag.firstMatch(string);
+      var tag = Delimiters.elementTag.firstMatch(string);
 
-      final String name = tag.namedGroup('tagName');
+      final name = tag.namedGroup('tagName');
 
       if (!name.startsWith('/')) {
         if (returnElementsNamed == null || returnElementsNamed.contains(name)) {
           List<XmlNode> children;
 
-          final String attributeData = tag.namedGroup('attributes').trim();
+          final attributeData = tag.namedGroup('attributes').trim();
 
           if (tag.namedGroup('isEmpty') != '/') {
-            tag = Delimiters.element(name, global).firstMatch(string);
+            tag = Delimiters.element(name, global: global).firstMatch(string);
 
             children = XmlNode.parseString(
               tag.namedGroup('children'),
               parseCharacterEntities: parseCharacterEntities,
               parseComments: true,
               trimWhitespace: false,
-              parseCdataAsText: true,
+              parseCdataAsText: parseCdataAsText,
             );
           }
 
           List<XmlAttribute> attributes;
 
-          bool attriubtesAreValid = true;
+          var attriubtesAreValid = true;
 
           if (attributeData.isNotEmpty) {
             attributes = XmlAttribute.parseString(
@@ -546,20 +549,20 @@ class XmlElement extends NodeWithChildren implements XmlNode {
 
             if (returnElementsWithAttributesNamed != null ||
                 returnElementsWithAttributes != null) {
-              int attributeNamesToValidate =
+              var attributeNamesToValidate =
                   (returnElementsWithAttributesNamed != null)
                       ? (matchAllAttributes)
                           ? returnElementsWithAttributesNamed.length
                           : 1
                       : 0;
 
-              int attributesToValidate = (returnElementsWithAttributes != null)
+              var attributesToValidate = (returnElementsWithAttributes != null)
                   ? (matchAllAttributes)
                       ? returnElementsWithAttributes.length
                       : 1
                   : 0;
 
-              for (XmlAttribute attribute in attributes) {
+              for (var attribute in attributes) {
                 if (attributeNamesToValidate > 0 &&
                     returnElementsWithAttributesNamed
                         .contains(attribute.name)) {
@@ -571,7 +574,8 @@ class XmlElement extends NodeWithChildren implements XmlNode {
                   attributesToValidate--;
                 }
 
-                if (attributeNamesToValidate <= 0 && attributesToValidate <= 0) {
+                if (attributeNamesToValidate <= 0 &&
+                    attributesToValidate <= 0) {
                   break;
                 }
               }
@@ -586,11 +590,9 @@ class XmlElement extends NodeWithChildren implements XmlNode {
           }
 
           if (attriubtesAreValid) {
-            final String id = attributes
-                ?.firstWhere(
-                  (XmlAttribute attribute) => attribute.name == 'id',
-                  orElse: () => null,
-                )
+            final id = attributes
+                ?.firstWhere((attribute) => attribute.name == 'id',
+                    orElse: () => null)
                 ?.value;
 
             if (elementCount >= start &&
@@ -621,50 +623,51 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   }
 
   @override
-  bool operator ==(o) {
-    // Compare types
-    if (o.runtimeType != XmlElement) return false;
+  bool operator ==(Object o) {
+    if (o is XmlElement) {
+      // Compare names
+      if (name.toLowerCase() != o.name.toLowerCase()) return false;
 
-    // Compare names
-    if (name.toLowerCase() != o.name.toLowerCase()) return false;
+      if ((id != null && o.id != null) && (id != o.id)) return false;
 
-    if ((id != null && o.id != null) && (id != o.id)) return false;
+      // Compare attributes
+      if (attributes == null && o.attributes != null) return false;
 
-    // Compare attributes
-    if (attributes == null && o.attributes != null) return false;
+      if (attributes != null && o.attributes == null) return false;
 
-    if (attributes != null && o.attributes == null) return false;
-
-    if (attributes != null && o.attributes != null) {
-      if (attributes.length != o.attributes.length) {
-        return false;
-      } else {
-        for (XmlAttribute attribute in attributes) {
-          if (attribute.value != o.getAttribute(attribute.name)) {
-            return false;
+      if (attributes != null && o.attributes != null) {
+        if (attributes.length != o.attributes.length) {
+          return false;
+        } else {
+          for (var attribute in attributes) {
+            if (attribute.value != o.getAttribute(attribute.name)) {
+              return false;
+            }
           }
         }
       }
-    }
 
-    // Compare children
-    if (children == null && o.children != null) return false;
+      // Compare children
+      if (children == null && o.children != null) return false;
 
-    if (children != null && o.children == null) return false;
+      if (children != null && o.children == null) return false;
 
-    if (children != null && o.children != null) {
-      if (children.length != o.children.length) {
-        return false;
-      } else {
-        for (int i = 0; i < children.length; i++) {
-          if (children[i] != o.children[i]) {
-            return false;
+      if (children != null && o.children != null) {
+        if (children.length != o.children.length) {
+          return false;
+        } else {
+          for (var i = 0; i < children.length; i++) {
+            if (children[i] != o.children[i]) {
+              return false;
+            }
           }
         }
       }
+
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   @override

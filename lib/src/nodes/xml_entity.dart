@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 import '../helpers/string_parser.dart';
@@ -6,6 +7,7 @@ import '../xml_node.dart';
 /// A DTD Entity Declaration.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-entity-decl
+@immutable
 class XmlEntity implements XmlNode {
   /// A DTD Entity Declaration.
   ///
@@ -120,14 +122,14 @@ class XmlEntity implements XmlNode {
   String toString([bool doubleQuotes = true]) {
     assert(doubleQuotes != null);
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = doubleQuotes ? '"' : '\'';
 
-    final String identifier =
-        (isSystem) ? ' SYSTEM' : (isPublic) ? ' PUBLIC' : '';
+    final identifier =
+        isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
 
-    final String value = ' $quotationMark${this.value}$quotationMark';
+    final value = ' $quotationMark${this.value}$quotationMark';
 
-    final String ndata = (this.ndata != null) ? ' NDATA ${this.ndata}' : '';
+    final ndata = (this.ndata != null) ? ' NDATA ${this.ndata}' : '';
 
     return '<!ENTITY $name$identifier$value$ndata>';
   }
@@ -144,7 +146,7 @@ class XmlEntity implements XmlNode {
     // TODO: assert(lineLength == null || lineLength > 0);
     assert(doubleQuotes != null);
 
-    String entity =
+    var entity =
         helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
 
     // TODO: Handle lineLength
@@ -212,18 +214,18 @@ class XmlEntity implements XmlNode {
   static XmlEntity _getEntity(RegExpMatch entity) {
     assert(entity != null);
 
-    final bool isParameter = entity.namedGroup('parameter') == '%';
+    final isParameter = entity.namedGroup('parameter') == '%';
 
-    final String name = entity.namedGroup('name');
+    final name = entity.namedGroup('name');
 
     if (name == null) return null;
 
-    final String identifier = entity.namedGroup('identifier')?.toUpperCase();
+    final identifier = entity.namedGroup('identifier')?.toUpperCase();
 
-    final bool isPublic = identifier == 'PUBLIC';
-    final bool isSystem = identifier == 'SYSTEM';
+    final isPublic = identifier == 'PUBLIC';
+    final isSystem = identifier == 'SYSTEM';
 
-    String value = entity.namedGroup('value');
+    var value = entity.namedGroup('value');
     value = helpers.stripDelimiters(value);
 
     String ndata;
@@ -246,7 +248,7 @@ class XmlEntity implements XmlNode {
   static final StringParser<XmlEntity> _parser = StringParser<XmlEntity>();
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlEntity &&
       name == o.name &&
       value == o.value &&

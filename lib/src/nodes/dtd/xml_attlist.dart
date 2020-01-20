@@ -4,7 +4,15 @@ import '../../helpers/helpers.dart' as helpers;
 import '../../helpers/string_parser.dart';
 import '../../xml_node.dart';
 
-enum XmlAttlistIdentifier { REQUIRED, IMPLIED, FIXED }
+/// The identifier for an Xml ATTLIST Declaration
+enum XmlAttlistIdentifier {
+  /// The Xml ATTLIST `#REQUIRED` delcaration.
+  required,
+  /// The Xml ATTLIST `#IMPLIED` declaration.
+  implied,
+  /// The Xml ATTLIST `#FIXED` declaration.
+  fixed,
+}
 
 /// An Attribute-list Declaration.
 ///
@@ -13,6 +21,7 @@ enum XmlAttlistIdentifier { REQUIRED, IMPLIED, FIXED }
 /// content of the attribute's values.
 ///
 /// See: https://www.w3.org/TR/xml/#attdecls
+@immutable
 class XmlAttlist implements XmlNode {
   /// An Attribute-list Declaration.
   ///
@@ -57,16 +66,16 @@ class XmlAttlist implements XmlNode {
   String toString([bool doubleQuotes = true]) {
     assert(doubleQuotes != null);
 
-    final String type = (this.type != null) ? ' ${this.type}' : '';
+    final type = (this.type != null) ? ' ${this.type}' : '';
 
-    final String identifier = (this.identifier != null)
-        ? ' #${this.identifier.toString().split('.').last}'
+    final identifier = (this.identifier != null)
+        ? ' #${this.identifier.toString().split('.').last.toUpperCase()}'
         : '';
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = (doubleQuotes) ? '"' : '\'';
 
-    final String value = (this.defaultValue != null)
-        ? ' $quotationMark${this.defaultValue}$quotationMark'
+    final value = (defaultValue != null)
+        ? ' $quotationMark$defaultValue$quotationMark'
         : '';
 
     return '<!ATTLIST $element $attribute$type$identifier$value>';
@@ -83,7 +92,7 @@ class XmlAttlist implements XmlNode {
     assert(indent != null);
     // TODO: assert(lineLength == null || lineLength > 0);
 
-    String attlist =
+    var attlist =
         helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
 
     // TODO: Handle lineLength
@@ -106,7 +115,7 @@ class XmlAttlist implements XmlNode {
     assert(string != null);
     assert(trimWhitespace != null);
 
-    final StringParser<XmlAttlist> parser = StringParser<XmlAttlist>();
+    final parser = StringParser<XmlAttlist>();
 
     return parser.fromString(
       input: string,
@@ -140,7 +149,7 @@ class XmlAttlist implements XmlNode {
     assert(start != null && start >= 0);
     assert(stop == null || stop >= start);
 
-    final StringParser<XmlAttlist> parser = StringParser<XmlAttlist>();
+    final parser = StringParser<XmlAttlist>();
 
     return parser.parseString(
       input: string,
@@ -157,30 +166,30 @@ class XmlAttlist implements XmlNode {
   static XmlAttlist _getAttlist(RegExpMatch attlist) {
     assert(attlist != null);
 
-    final String element = attlist.namedGroup('element');
+    final element = attlist.namedGroup('element');
 
     if (element == null) return null;
 
-    final String attribute = attlist.namedGroup('attribute');
+    final attribute = attlist.namedGroup('attribute');
 
     if (attribute == null) return null;
 
-    final String type = attlist.namedGroup('type')?.trimRight();
+    final type = attlist.namedGroup('type')?.trimRight();
 
-    final String identifier = attlist.namedGroup('identifier')?.toUpperCase();
+    final identifier = attlist.namedGroup('identifier')?.toUpperCase();
 
-    final String defaultValue = attlist.namedGroup('defaultValue')?.trim();
+    final defaultValue = attlist.namedGroup('defaultValue')?.trim();
 
     return XmlAttlist(
       element: element,
       attribute: attribute,
-      type: (type.isNotEmpty) ? type : null,
+      type: type.isNotEmpty ? type : null,
       identifier: (identifier == '#REQUIRED' || type == '#REQUIRED')
-          ? XmlAttlistIdentifier.REQUIRED
+          ? XmlAttlistIdentifier.required
           : (identifier == '#IMPLIED' || type == '#IMPLIED')
-              ? XmlAttlistIdentifier.IMPLIED
+              ? XmlAttlistIdentifier.implied
               : (identifier == '#FIXED' || type == '#FIXED')
-                  ? XmlAttlistIdentifier.FIXED
+                  ? XmlAttlistIdentifier.fixed
                   : null,
       defaultValue:
           (defaultValue == null) ? null : helpers.stripDelimiters(defaultValue),
@@ -188,7 +197,7 @@ class XmlAttlist implements XmlNode {
   }
 
   @override
-  operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlAttlist &&
       element == o.element &&
       attribute == o.attribute &&

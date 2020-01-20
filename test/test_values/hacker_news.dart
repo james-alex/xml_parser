@@ -5,15 +5,16 @@ bool validateItems(List<XmlElement> items) {
 
   if (items.length != 30) return false;
 
-  bool valid = true;
+  var valid = true;
 
-  for (int i = 0; i < 30; i++) {
-    final XmlElement item = items[i];
+  for (var i = 0; i < 30; i++) {
+    final item = items[i];
 
-    final Map<String, String> values = itemValues[i];
+    final values = itemValues[i];
 
     if (item.getChild('title').text != values['title']) {
-      print('[validateHackerNewsItems] item.getChild(\'title\').text != values[\'title\']');
+      print('[validateHackerNewsItems] item.getChild(\'title\').text '
+          '!= values[\'title\']');
       print('EXPECTED: ${values['title']}');
       print('ACTUAL: ${item.getChild('title').text}');
       valid = false;
@@ -21,7 +22,8 @@ bool validateItems(List<XmlElement> items) {
     }
 
     if (item.getChild('link').text != values['link']) {
-      print('[validateHackerNewsItems] item.getChild(\'link\').text != values[\'link\']');
+      print('[validateHackerNewsItems] item.getChild(\'link\').text '
+          '!= values[\'link\']');
       print('EXPECTED: ${values['link']}');
       print('ACTUAL: ${item.getChild('link').text}');
       valid = false;
@@ -29,7 +31,8 @@ bool validateItems(List<XmlElement> items) {
     }
 
     if (item.getChild('pubDate').text != values['pubDate']) {
-      print('[validateHackerNewsItems] item.getChild(\'pubDate\').text != values[\'pubDate\']');
+      print('[validateHackerNewsItems] item.getChild(\'pubDate\').text '
+          '!= values[\'pubDate\']');
       print('EXPECTED: ${values['pubDate']}');
       print('ACTUAL: ${item.getChild('pubDate').text}');
       valid = false;
@@ -37,7 +40,8 @@ bool validateItems(List<XmlElement> items) {
     }
 
     if (item.getChild('comments').text != values['comments']) {
-      print('[validateHackerNewsItems] item.getChild(\'comments\').text != values[\'comments\']');
+      print('[validateHackerNewsItems] item.getChild(\'comments\').text '
+          '!= values[\'comments\']');
       print('EXPECTED: ${values['comments']}');
       print('ACTUAL: ${item.getChild('comments').text}');
       valid = false;
@@ -45,7 +49,8 @@ bool validateItems(List<XmlElement> items) {
     }
 
     if (item.getChild('description').text != values['description']) {
-      print('[validateHackerNewsItems] item.getChild(\'description\').text != values[\'description\']');
+      print('[validateHackerNewsItems] item.getChild(\'description\').text '
+          '!= values[\'description\']');
       print('EXPECTED: ${values['description']}');
       print('ACTUAL: ${item.getChild('description').text}');
       valid = false;
@@ -72,7 +77,8 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20657398">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Alan Kay&#x27;s answer to ‘what are some forgotten books programmers should read?’',
+    'title': 'Alan Kay&#x27;s answer to ‘what are some forgotten books '
+        'programmers should read?’',
     'link': 'https://www.quora.com/Experienced-programmers-and-computer-scientists-what-are-some-really-old-or-even-nearly-forgotten-books-you-think-every-new-programmer-should-read/answer/Alan-Kay-11?share=1',
     'pubDate': 'Fri, 9 Aug 2019 11:55:20 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20653453',
@@ -100,7 +106,8 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20656680">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Hundreds of exposed Amazon cloud backups found leaking sensitive data',
+    'title': 'Hundreds of exposed Amazon cloud backups found leaking '
+        'sensitive data',
     'link': 'https://techcrunch.com/2019/08/09/aws-ebs-cloud-backups-leak',
     'pubDate': 'Fri, 9 Aug 2019 18:57:52 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20657308',
@@ -114,7 +121,8 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20646540">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Huntington Park’s “RoboCop” stores pedestrians’ faces, scans license plates',
+    'title': 'Huntington Park’s “RoboCop” stores pedestrians’ faces, '
+        'scans license plates',
     'link': 'https://www.muckrock.com/news/archives/2019/aug/05/california-hp-robocop/',
     'pubDate': 'Fri, 9 Aug 2019 11:59:32 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20653485',
@@ -184,14 +192,16 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20655766">Comments</a>]]>',
   },
   <String, String>{
-    'title': '‘No One Saw a Thing’: When a Midwest Town Banded Together to Kill the Town Bully',
+    'title': '‘No One Saw a Thing’: When a Midwest Town Banded Together '
+        'to Kill the Town Bully',
     'link': 'https://www.thedailybeast.com/no-one-saw-a-thing-when-a-small-midwest-town-banded-together-to-kill-the-town-bully',
     'pubDate': 'Fri, 9 Aug 2019 17:05:03 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20656241',
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20656241">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Summer camps use facial recognition so parents can watch from home',
+    'title': 'Summer camps use facial recognition so parents can watch '
+        'from home',
     'link': 'https://www.sfgate.com/news/article/Summer-camps-use-facial-recognition-so-parents-14291272.php',
     'pubDate': 'Thu, 8 Aug 2019 22:26:06 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20649504',
@@ -205,7 +215,8 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20646249">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Rice University researchers propose a way to boost solar efficiency',
+    'title': 'Rice University researchers propose a way to boost '
+        'solar efficiency',
     'link': 'https://polyarch.co/rice-university-research-heat-into-light/',
     'pubDate': 'Fri, 9 Aug 2019 18:12:22 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20656929',
@@ -219,14 +230,16 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20658291">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'OneSignal raised a \$25M Series B and is hiring a Distributed Systems Architect',
+    'title': 'OneSignal raised a \$25M Series B and is hiring a '
+        'Distributed Systems Architect',
     'link': 'https://onesignal.com/careers#distributed_systems_architect',
     'pubDate': 'Sat, 10 Aug 2019 00:11:37 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20659286',
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20659286">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'The New Lion King trailer style transformed to resemble the animated version',
+    'title': 'The New Lion King trailer style transformed to '
+        'resemble the animated version',
     'link': 'http://geekdommovies.com/heres-what-the-live-action-lion-king-would-look-like-if-the-cgi-was-closer-to-the-original-animated-movie/',
     'pubDate': 'Fri, 9 Aug 2019 23:00:46 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20658901',
@@ -254,7 +267,8 @@ const List<Map<String, String>> itemValues = <Map<String, String>>[
     'description': '<![CDATA[<a href="https://news.ycombinator.com/item?id=20653316">Comments</a>]]>',
   },
   <String, String>{
-    'title': 'Free Software network services and web applications which can be hosted locally',
+    'title': 'Free Software network services and web applications '
+        'which can be hosted locally',
     'link': 'https://github.com/Kickball/awesome-selfhosted',
     'pubDate': 'Fri, 9 Aug 2019 22:37:14 +0000',
     'comments': 'https://news.ycombinator.com/item?id=20658765',

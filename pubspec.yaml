@@ -2,8 +2,7 @@ name: xml_parser
 description: >-
   An unopinionated XML parser that can
   read, traverse, and write XML documents.
-version: 0.1.0+3
-author: James Alexander <j.alex@email.com>
+version: 0.1.1
 homepage: https://github.com/james-alex/xml_parser
 
 environment:
@@ -17,3 +16,4 @@ dependencies:
 
 dev_dependencies:
   test: ^1.6.5
+  effective_dart: ^1.0.0

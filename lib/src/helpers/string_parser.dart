@@ -2,10 +2,7 @@ import 'package:meta/meta.dart';
 import './helpers.dart' as helpers;
 
 /// GetNode functions should accept a [RegExpMatch] and return an [XmlNode].
-///
-/// Because Dart doesn't allow the return type [T] to be set
-/// for typedefs, the return type is left as [dynamic].
-typedef GetNode(RegExpMatch node);
+typedef GetNode<T> = T Function(RegExpMatch node);
 
 /// A class containing [fromString] and [parseString] methods to be
 /// used by [XmlNode]s that follow the same pattern for parsing.
@@ -15,7 +12,7 @@ class StringParser<T> {
   T fromString({
     @required String input,
     @required RegExp delimiter,
-    @required GetNode getNode,
+    @required GetNode<T> getNode,
     bool parseComments = false,
     @required bool trimWhitespace,
   }) {
@@ -27,7 +24,7 @@ class StringParser<T> {
 
     if (trimWhitespace) input = helpers.trimWhitespace(input);
 
-    final RegExpMatch node = delimiter.firstMatch(input);
+    final node = delimiter.firstMatch(input);
 
     if (node == null) return null;
 
@@ -57,15 +54,15 @@ class StringParser<T> {
 
     if (trimWhitespace) input = helpers.trimWhitespace(input);
 
-    final Iterable<RegExpMatch> matches = delimiter.allMatches(input);
+    final matches = delimiter.allMatches(input);
 
     if (matches.isEmpty || start >= matches.length) return null;
 
-    final List<T> nodes = List<T>();
+    final nodes = <T>[];
 
-    int nodeCount = 0;
+    var nodeCount = 0;
 
-    for (RegExpMatch match in matches) {
+    for (var match in matches) {
       final T node = getNode(match);
 
       if (match == null) continue;

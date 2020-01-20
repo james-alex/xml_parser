@@ -21,7 +21,8 @@ class Delimiters {
     isDotAll: true,
   );
 
-  /// Matches comments delimited with `<!--` and `-->` and captures their contents.
+  /// Matches comments delimited with `<!--` and `-->`
+  /// and captures their contents.
   static final RegExp comment = RegExp(r'<!--(?<value>.*?)-->', dotAll: true);
 
   /// Matches XML Conditional Sections and captures their values.
@@ -56,7 +57,7 @@ class Delimiters {
 
   /// Matches an XML element from its opening tag to its
   /// closing tag and captures its children.
-  static RecursiveRegex element(String elementName, [bool global = false]) {
+  static RecursiveRegex element(String elementName, {bool global = false}) {
     assert(elementName != null && elementName.isNotEmpty);
     assert(global != null);
 
@@ -76,7 +77,8 @@ class Delimiters {
     dotAll: true,
   );
 
-  /// Matches an XML Element Type Declaration and captures its name and children.
+  /// Matches an XML Element Type Declaration
+  /// and captures its name and children.
   static final RegExp etd = RegExp(
     r'<\s*?!\s*?ELEMENT\s*(?<name>\S*)\s*(?<children>.*?)>',
     dotAll: true,

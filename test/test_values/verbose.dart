@@ -10,7 +10,7 @@ bool validateChildren(List<XmlNode> nodes) {
     return false;
   }
 
-  for (int i = 0; i < nodes.length; i++) {
+  for (var i = 0; i < nodes.length; i++) {
     if (!_validateNode(nodes[i], children[i])) return false;
   }
 
@@ -22,9 +22,10 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
   assert(values != null);
 
   // Check if the node is of the expected type.
-  final Type type = values.keys.first;
+  final type = values.keys.first;
 
   if (node.runtimeType != type) {
+    print('$node: ${values.keys}\n');
     print('[_validateNode] node.runtimeType != type');
     print('EXPECTED: $type');
     print('ACTUAL: ${node.runtimeType}');
@@ -49,20 +50,22 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
     }
   } else if (node is XmlConditional) {
     if (node.condition != value['condition']) {
-      print('[_validateNode] XmlConditional: node.condition != value[\'condition\']');
+      print('[_validateNode] XmlConditional: node.condition != '
+          'value[\'condition\']');
       print('EXPECTED: ${value['condition']}');
       print('ACTUAL: ${node.condition}');
       return false;
     }
 
     if (node.children.length != value['value'].length) {
-      print('[_validateNode] XmlConditional: node.children.length != value[\'condition\'].length');
+      print('[_validateNode] XmlConditional: node.children.length '
+          '!= value[\'condition\'].length');
       print('EXPECTED: ${value['value'].length}');
       print('ACTUAL: ${node.children.length}');
       return false;
     }
 
-    for (int i = 0; i < node.children.length; i++) {
+    for (var i = 0; i < node.children.length; i++) {
       if (!_validateNode(node.children[i], value['value'][i])) return false;
     }
   } else if (node is XmlElement) {
@@ -81,11 +84,12 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
     }
 
     if (value.containsKey('attributes')) {
-      bool attributesAreValid = true;
+      var attributesAreValid = true;
 
-      value['attributes'].forEach((String name, String value) {
+      value['attributes'].forEach((name,value) {
         if (!node.hasAttributeWhere(name, value)) {
-          print('[_validateNode] XmlElement: !node.hasAttributeWhere($name, $value)');
+          print('[_validateNode] XmlElement: '
+              '!node.hasAttributeWhere($name, $value)');
           print('EXPECTED: true');
           print('ACTUAL: false');
           attributesAreValid = false;
@@ -96,13 +100,14 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
     }
     if (value.containsKey('children')) {
       if (node.children.length != value['children'].length) {
-        print('[_validateNodde] XmlElement: node.children.length != value[\'children\'].length');
+        print('[_validateNodde] XmlElement: node.children.length '
+            '!= value[\'children\'].length');
         print('EXPECTED: ${value['children'].length}');
         print('ACTUAL: ${node.children.length}');
         return false;
       }
 
-      for (int i = 0; i < node.children.length; i++) {
+      for (var i = 0; i < node.children.length; i++) {
         if (!_validateNode(node.children[i], value['children'][i])) {
           return false;
         }
@@ -156,7 +161,8 @@ final List<Type> internalDtdTypes = <Type>[
 final List<String> textValues = <String>[
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Proin in lectus vel ipsum sagittis cursus.',
-  'Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas odio, fermentum vulputate elit erat ut ex.',
+  'Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas '
+      'odio, fermentum vulputate elit erat ut ex.',
   'Suspendisse et sollicitudin est, ut gravida sapien.',
 ];
 
@@ -177,10 +183,21 @@ final List<String> commentValues = <String>[
 ];
 
 final List<String> conditionalSections = <String>[
-  '<![ IGNORE [Donec id augue hendrerit dui rhoncus elementum vel sit amet sapien.]]>',
-  '<![ INCLUDE [<text test2="test">Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas odio, fermentum vulputate elit erat ut ex.<![ IGNORE [Donec id augue hendrerit dui rhoncus elementum vel sit amet sapien.]]></text>]]>',
+  '<![ IGNORE [Donec id augue hendrerit dui rhoncus '
+      'elementum vel sit amet sapien.]]>',
+  '<![ INCLUDE [<text test2="test">Aliquam efficitur, '
+      'nibh sed tincidunt congue, turpis leo egestas odio, '
+      'fermentum vulputate elit erat ut ex.<![ IGNORE [Donec '
+      'id augue hendrerit dui rhoncus elementum vel sit amet '
+      'sapien.]]></text>]]>',
   '<![ IGNORE [<image width="250" height="300" src="test2.gif" />]]>',
-  '<![ &condition; [<image width="50" height="80" src="test1.gif" /><text>Proin in lectus vel ipsum sagittis cursus.</text><![ INCLUDE [<text test2="test">Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas odio, fermentum vulputate elit erat ut ex.<![ IGNORE [Donec id augue hendrerit dui rhoncus elementum vel sit amet sapien.]]></text>]]><![ IGNORE [<image width="250" height="300" src="test2.gif" />]]>]]>',
+  '<![ &condition; [<image width="50" height="80" src="test1.gif" />'
+      '<text>Proin in lectus vel ipsum sagittis cursus.</text><![ INCLUDE '
+      '[<text test2="test">Aliquam efficitur, nibh sed tincidunt congue, '
+      'turpis leo egestas odio, fermentum vulputate elit erat ut ex.<![ IGNORE '
+      '[Donec id augue hendrerit dui rhoncus elementum vel sit amet sapien.]]>'
+      '</text>]]><![ IGNORE [<image width="250" height="300" src="test2.gif" '
+      '/>]]>]]>',
 ];
 
 final List<String> entities = <String>[
@@ -246,14 +263,17 @@ final List<Map<Type, dynamic>> children = [
                   },
                   'children': [
                     {
-                      XmlText: 'Aliquam efficitur, nibh sed tincidunt congue, turpis leo egestas odio, fermentum vulputate elit erat ut ex.',
+                      XmlText: 'Aliquam efficitur, nibh sed tincidunt '
+                          'congue, turpis leo egestas odio, fermentum '
+                          'vulputate elit erat ut ex.',
                     },
                     {
                       XmlConditional: {
                         'condition': 'IGNORE',
                         'value': [
                           {
-                            XmlText: 'Donec id augue hendrerit dui rhoncus elementum vel sit amet sapien.',
+                            XmlText: 'Donec id augue hendrerit dui rhoncus '
+                                'elementum vel sit amet sapien.',
                           },
                         ],
                       },
@@ -298,7 +318,8 @@ final List<Map<Type, dynamic>> children = [
       'name': 'cdata',
       'children': [
         {
-          XmlCdata: '<markup bool="false">liquam venenatis lobortis tellus non lobortis.</markup>',
+          XmlCdata: '<markup bool="false">liquam venenatis lobortis '
+              'tellus non lobortis.</markup>',
         }
       ],
     },

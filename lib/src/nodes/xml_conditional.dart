@@ -7,6 +7,7 @@ import '../xml_node.dart';
 /// An XML Conditional Section.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-condition-sect
+@immutable
 class XmlConditional extends NodeWithChildren implements XmlNode {
   /// An XML Conditional Section.
   ///
@@ -34,8 +35,8 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   Future<void> loadExternalDtd() async {
     if (children == null || children.isEmpty) return;
 
-    for (int i = 0; i < children.length; i++) {
-      final XmlNode child = children[i];
+    for (var i = 0; i < children.length; i++) {
+      final child = children[i];
 
       if (child is XmlConditional) {
         await child.loadExternalDtd();
@@ -73,7 +74,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     assert(encodeCharacterEntities != null);
     assert(doubleQuotes != null);
 
-    final String children = helpers.childrenToString(
+    final children = helpers.childrenToString(
       children: this.children,
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
@@ -98,7 +99,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     assert(encodeCharacterEntities != null);
     assert(doubleQuotes != null);
 
-    String conditional =
+    var conditional =
         helpers.formatLine('<![ $condition [', nestingLevel, indent);
 
     conditional += helpers.formatChildren(
@@ -227,19 +228,19 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final List<RegExpMatch> matches =
+    final matches =
         Delimiters.conditional.copyWith(global: global).allMatches(string);
 
     if (start >= matches.length) return null;
 
-    final List<XmlConditional> conditionals = List<XmlConditional>();
+    final conditionals = <XmlConditional>[];
 
-    for (int i = start; i < matches.length; i++) {
-      final RegExpMatch match = matches[i];
+    for (var i = start; i < matches.length; i++) {
+      final match = matches[i];
 
-      final String condition = match.namedGroup('condition');
+      final condition = match.namedGroup('condition');
 
-      final String value = match.namedGroup('value')?.trim();
+      final value = match.namedGroup('value')?.trim();
 
       conditionals.add(
         XmlConditional(
@@ -263,27 +264,28 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   }
 
   @override
-  operator ==(o) {
-    // Compare types
-    if (o.runtimeType != XmlConditional) return false;
+  bool operator ==(Object o) {
+    if (o is XmlConditional) {
+      // Compare conditions
+      if (condition != o.condition) return false;
 
-    // Compare conditions
-    if (condition != o.condition) return false;
+      // Compare children
+      if (children == null && o.children != null) return false;
 
-    // Compare children
-    if (children == null && o.children != null) return false;
+      if (children != null && o.children == null) return false;
 
-    if (children != null && o.children == null) return false;
+      if (children != null) {
+        if (children.length != o.children.length) return false;
 
-    if (children != null) {
-      if (children.length != o.children.length) return false;
-
-      for (int i = 0; i < children.length; i++) {
-        if (children[i] != o.children[i]) return false;
+        for (var i = 0; i < children.length; i++) {
+          if (children[i] != o.children[i]) return false;
+        }
       }
+
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   @override

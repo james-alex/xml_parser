@@ -1,8 +1,10 @@
 import 'package:html_character_entities/html_character_entities.dart';
+import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
 import '../helpers/helpers.dart' as helpers;
 
 /// An attribute of a XML element.
+@immutable
 class XmlAttribute {
   /// An attribute of a XML element.
   ///
@@ -27,9 +29,9 @@ class XmlAttribute {
     assert(doubleQuotes != null);
     assert(encodeCharacterEntities != null);
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = (doubleQuotes) ? '"' : '\'';
 
-    String value = this.value;
+    var value = this.value;
 
     if (encodeCharacterEntities) {
       value = HtmlCharacterEntities.encode(value, checkAmpsForEntities: true);
@@ -57,13 +59,13 @@ class XmlAttribute {
 
     string = helpers.removeComments(string);
 
-    final RegExpMatch attribute = Delimiters.attribute.firstMatch(string);
+    final attribute = Delimiters.attribute.firstMatch(string);
 
     if (attribute == null) return null;
 
-    final String name = attribute.namedGroup('name');
+    final name = attribute.namedGroup('name');
 
-    String value = attribute.namedGroup('value');
+    var value = attribute.namedGroup('value');
 
     if (parseCharacterEntities) value = HtmlCharacterEntities.decode(value);
 
@@ -104,22 +106,21 @@ class XmlAttribute {
 
     if (trimWhitespace) string = helpers.trimWhitespace(string);
 
-    final Iterable<RegExpMatch> matches =
-        Delimiters.attribute.allMatches(string);
+    final matches = Delimiters.attribute.allMatches(string);
 
     if (matches.isEmpty || start >= matches.length) return null;
 
-    final List<XmlAttribute> attributes = List<XmlAttribute>();
+    final attributes = <XmlAttribute>[];
 
-    int attributeCount = 0;
+    var attributeCount = 0;
 
-    for (RegExpMatch match in matches) {
-      final String name = match.namedGroup('name');
+    for (var match in matches) {
+      final name = match.namedGroup('name');
 
       if (name == null) continue;
 
       if (attributeCount >= start) {
-        String value = match.namedGroup('value');
+        var value = match.namedGroup('value');
 
         if (value != null) value = helpers.stripDelimiters(value);
 
@@ -139,7 +140,7 @@ class XmlAttribute {
   }
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlAttribute &&
       name.toLowerCase() == o.name.toLowerCase() &&
       value == o.value;

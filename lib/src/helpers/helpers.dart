@@ -21,8 +21,8 @@ String removeComments(String input) {
 String stripDelimiters(String input) {
   assert(input != null);
 
-  final String first = input.substring(0, 1);
-  final String last = input.substring(input.length - 1);
+  final first = input.substring(0, 1);
+  final last = input.substring(input.length - 1);
 
   if ((first == '\'' && last == '\'') ||
       (first == '"' && last == '"') ||
@@ -54,11 +54,13 @@ String formatLine(String input, int nestingLevel, String indent) {
   assert(nestingLevel != null && nestingLevel >= 0);
   assert(indent != null);
 
-  final String lineIndent = indent * nestingLevel;
+  final lineIndent = indent * nestingLevel;
 
-  return lineIndent + input + '\r\n';
+  return '$lineIndent$input\n';
 }
 
+/// Writes all [children] as a string with thier
+/// respective `toString()` methods.
 String childrenToString({
   @required List<XmlNode> children,
   bool encodeCharacterEntities = true,
@@ -69,9 +71,9 @@ String childrenToString({
   assert(encodeCharacterEntities != null);
   assert(doubleQuotes != null);
 
-  String string = '';
+  var string = '';
 
-  children.forEach((XmlNode child) {
+  for (var child in children) {
     String node;
 
     if (child is XmlAttlist) {
@@ -116,7 +118,7 @@ String childrenToString({
     }
 
     string += node;
-  });
+  }
 
   return string;
 }
@@ -143,9 +145,9 @@ String formatChildren({
 
   nestingLevel += 1;
 
-  String formattedChildren = '';
+  var formattedChildren = '';
 
-  children.forEach((XmlNode child) {
+  for (var child in children) {
     if (child is XmlAttlist) {
       formattedChildren += child.toFormattedString(
         nestingLevel: nestingLevel,
@@ -234,7 +236,7 @@ String formatChildren({
         encodeCharacters: encodeCharacters ?? '&<>',
       );
     }
-  });
+  }
 
   return formattedChildren;
 }

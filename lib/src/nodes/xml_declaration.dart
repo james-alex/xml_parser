@@ -9,6 +9,7 @@ import '../xml_node.dart';
 /// All valid XML documents should begin with an XML declaration.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-prolog-dtd
+@immutable
 class XmlDeclaration implements XmlNode {
   /// The XML declaration.
   ///
@@ -41,17 +42,19 @@ class XmlDeclaration implements XmlNode {
   String toString([bool doubleQuotes = true]) {
     assert(doubleQuotes != null);
 
-    final String quotationMark = (doubleQuotes) ? '"' : '\'';
+    final quotationMark = (doubleQuotes) ? '"' : '\'';
 
-    final String encoding = (this.encoding != null)
+    final encoding = (this.encoding != null)
         ? ' encoding=$quotationMark${this.encoding}$quotationMark'
         : '';
 
-    final String standalone = (this.standalone != null)
-        ? ' standalone=$quotationMark${(this.standalone) ? 'yes' : 'no'}$quotationMark'
+    final standalone = (this.standalone != null)
+        ? ' standalone=$quotationMark${(this.standalone) ? 'yes' : 'no'}'
+            '$quotationMark'
         : '';
 
-    return '<?xml version=$quotationMark$version$quotationMark$encoding$standalone ?>';
+    return '<?xml version=$quotationMark$version'
+        '$quotationMark$encoding$standalone ?>';
   }
 
   @override
@@ -66,7 +69,7 @@ class XmlDeclaration implements XmlNode {
     // TODO: assert(lineLength == null || lineLength > 0);
     assert(doubleQuotes != null);
 
-    String declaration =
+    var declaration =
         helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
 
     // TODO: Handle lineLength
@@ -136,14 +139,14 @@ class XmlDeclaration implements XmlNode {
   static XmlDeclaration _getDeclaration(RegExpMatch declaration) {
     assert(declaration != null);
 
-    final String attributeData = declaration.namedGroup('attributes');
+    final attributeData = declaration.namedGroup('attributes');
 
     String version;
     String encoding;
     bool standalone;
 
     if (attributeData != null) {
-      final List<XmlAttribute> attributes = XmlAttribute.parseString(
+      final attributes = XmlAttribute.parseString(
         attributeData,
         parseCharacterEntities: false,
         trimWhitespace: false,
@@ -151,7 +154,7 @@ class XmlDeclaration implements XmlNode {
 
       if (attributes.isEmpty) return null;
 
-      attributes.forEach((XmlAttribute attribute) {
+      for (var attribute in attributes) {
         switch (attribute.name.toLowerCase()) {
           case 'version':
             version = attribute.value;
@@ -160,12 +163,12 @@ class XmlDeclaration implements XmlNode {
             encoding = attribute.value;
             break;
           case 'standalone':
-            final String value = attribute.value.toLowerCase();
+            final value = attribute.value.toLowerCase();
             standalone =
                 (value == 'yes') ? true : (value == 'no') ? false : null;
             break;
         }
-      });
+      }
     }
 
     if (version == null) return null;
@@ -182,7 +185,7 @@ class XmlDeclaration implements XmlNode {
       StringParser<XmlDeclaration>();
 
   @override
-  operator ==(o) =>
+  bool operator ==(Object o) =>
       o is XmlDeclaration &&
       version == o.version &&
       encoding == o.encoding &&
