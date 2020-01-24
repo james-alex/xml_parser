@@ -1,5 +1,8 @@
 # xml_parser
 
+[![pub package](https://img.shields.io/pub/v/xml_parser.svg)](https://pub.dartlang.org/packages/xml_parser)
+[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
+
 An unopinionated XML parser that can read, traverse, and write XML documents.
 
 __Documentation (API Reference):__
