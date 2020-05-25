@@ -153,7 +153,7 @@ class XmlDocument extends NodeWithChildren {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if the document is empty.
-  static XmlDocument fromString(
+  factory XmlDocument.from(
     String document, {
     bool parseCharacterEntities = true,
     bool parseComments = false,

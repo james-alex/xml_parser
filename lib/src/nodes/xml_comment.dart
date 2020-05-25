@@ -44,7 +44,7 @@ class XmlComment implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no comments are found.
-  static XmlComment fromString(
+  factory XmlComment.from(
     String string, {
     bool trimWhitespace = true,
   }) {

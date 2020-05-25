@@ -210,7 +210,7 @@ class XmlDoctype implements XmlNode {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if no Doctype Declarations are found.
-  static XmlDoctype fromString(
+  factory XmlDoctype.from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,

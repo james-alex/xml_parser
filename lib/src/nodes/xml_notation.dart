@@ -93,7 +93,7 @@ class XmlNotation implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid Notation Declarations are found.
-  static XmlNotation fromString(
+  factory XmlNotation.from(
     String string, {
     bool trimWhitespace = true,
   }) {

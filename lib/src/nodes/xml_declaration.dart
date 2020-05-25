@@ -85,7 +85,7 @@ class XmlDeclaration implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no XML declaration was found.
-  static XmlDeclaration fromString(
+  factory XmlDeclaration.from(
     String string, {
     bool trimWhitespace = true,
   }) {

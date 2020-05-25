@@ -50,7 +50,7 @@ class XmlCdata implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no CDATA sections are found.
-  static XmlCdata fromString(
+  factory XmlCdata.from(
     String string, {
     bool trimWhitespace = true,
   }) {

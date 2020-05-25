@@ -50,7 +50,7 @@ class XmlAttribute {
   /// character. [parseCharacterEntities] must not be `null`.
   ///
   /// Returns `null` if no attributes are found.
-  static XmlAttribute fromString(
+  factory XmlAttribute.from(
     String string, {
     bool parseCharacterEntities = true,
   }) {

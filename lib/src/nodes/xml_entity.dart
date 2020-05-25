@@ -162,7 +162,7 @@ class XmlEntity implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid DTD entities are found.
-  static XmlEntity fromString(
+  factory XmlEntity.from(
     String string, {
     bool trimWhitespace = true,
   }) {

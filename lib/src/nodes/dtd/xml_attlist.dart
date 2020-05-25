@@ -110,7 +110,7 @@ class XmlAttlist implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid Attlist Declaration was found.
-  static XmlAttlist fromString(
+  factory XmlAttlist.from(
     String string, {
     bool trimWhitespace = true,
   }) {

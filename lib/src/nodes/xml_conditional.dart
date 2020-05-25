@@ -154,7 +154,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   ///
   /// If [parseCdataAsText] is `true`, all CDATA sections will be
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
-  static XmlConditional fromString(
+  factory XmlConditional.from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,

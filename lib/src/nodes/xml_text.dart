@@ -99,7 +99,7 @@ class XmlText implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
-  static XmlText fromString(
+  factory XmlText.from(
     String string, {
     bool parseCharacterEntities = true,
     bool isMarkup = false,

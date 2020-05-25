@@ -392,7 +392,7 @@ class XmlElement extends NodeWithChildren implements XmlNode {
   /// [returnElementsWithAttributes].
   ///
   /// Returns `null` if no elements were found.
-  static XmlElement fromString(
+  factory XmlElement.from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,

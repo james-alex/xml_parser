@@ -53,7 +53,7 @@ class XmlEtd implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid ETD was found.
-  static XmlEtd fromString(
+  factory XmlEtd.from(
     String string, {
     bool trimWhitespace = false,
   }) {

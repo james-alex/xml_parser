@@ -16,7 +16,7 @@ void main() async {
   test('Document Parsing (HackerNews)', () {
     // Parse the test document.
     final hackerNews =
-        XmlDocument.fromString(hackerNewsXml, parseCharacterEntities: false);
+        XmlDocument.from(hackerNewsXml, parseCharacterEntities: false);
 
     // Check if the comment at the top of the document was ignored.
     expect(hackerNews.children.first, equals(hackerNews.root));
@@ -65,20 +65,20 @@ void main() async {
     // Extract the first `title` element found, and
     // compare its value to the expected value.
     final title =
-        XmlElement.fromString(hackerNewsXml, returnElementsNamed: ['title']);
+        XmlElement.from(hackerNewsXml, returnElementsNamed: ['title']);
 
     expect(title.text, equals('Hacker News'));
 
     // Extract the first `link` element found, and
     // compare its value to the expected value.
     final link =
-        XmlElement.fromString(hackerNewsXml, returnElementsNamed: ['link']);
+        XmlElement.from(hackerNewsXml, returnElementsNamed: ['link']);
 
     expect(link.text, equals('https://news.ycombinator.com/'));
 
     // Extract the first `description` element found,
     // and compare its value to the expected value.
-    final description = XmlElement.fromString(hackerNewsXml,
+    final description = XmlElement.from(hackerNewsXml,
         returnElementsNamed: ['description']);
 
     expect(description.text,
@@ -146,7 +146,7 @@ void main() async {
 
     // Extract the RSS element by its 'version' attribute
     // and confirm the correct element was captured.
-    final versioned = XmlElement.fromString(
+    final versioned = XmlElement.from(
       hackerNewsXml,
       returnElementsWithAttributesNamed: ['version'],
     );
@@ -163,7 +163,7 @@ void main() async {
   // extracted values to a map of the expected values.
   test('Document Parsing (Library)', () {
     // Parse the test document.
-    final library = XmlDocument.fromString(libraryXml, parseComments: true);
+    final library = XmlDocument.from(libraryXml, parseComments: true);
 
     // Check if the correct number of root level nodes were parsed.
     expect(library.children.length, equals(4));
@@ -222,7 +222,7 @@ void main() async {
 
   test('Document Parsing (Verbose)', () {
     // Parse the test document.
-    final verbose = XmlDocument.fromString(verboseXml,
+    final verbose = XmlDocument.from(verboseXml,
         parseComments: true, parseCdataAsText: false);
 
     // Check if the correct number of root level nodes were parsed.
@@ -268,14 +268,14 @@ void main() async {
 
   test('Node Extraction (Verbose)', () {
     // Extract and validate the XML Declaration.
-    expect(XmlDeclaration.fromString(verboseXml).toString(),
+    expect(XmlDeclaration.from(verboseXml).toString(),
         equals(verbose_values.xmlDeclaration));
 
     expect(XmlDeclaration.parseString(verboseXml).first.toString(),
         equals(verbose_values.xmlDeclaration));
 
     // Extract and validate the Processing Instruction Declaration.
-    expect(XmlProcessingInstruction.fromString(verboseXml).toString(),
+    expect(XmlProcessingInstruction.from(verboseXml).toString(),
         equals(verbose_values.processingInstruction));
 
     expect(XmlProcessingInstruction.parseString(verboseXml).first.toString(),
@@ -283,14 +283,14 @@ void main() async {
 
     // Extract and validate the DocType Declaration.
     expect(
-        XmlDoctype.fromString(verboseXml).toString(), equals(verboseDoctype));
+        XmlDoctype.from(verboseXml).toString(), equals(verboseDoctype));
 
     expect(XmlDoctype.parseString(verboseXml).first.toString(),
         equals(verboseDoctype));
 
     // Extract and validate the `root` element.
     expect(
-      XmlElement.fromString(
+      XmlElement.from(
         verboseXml,
         returnElementsNamed: ['root'],
         parseComments: true,
@@ -349,7 +349,7 @@ void main() async {
     }
 
     // Extract and validate all comments.
-    expect(XmlComment.fromString(verboseXml).value,
+    expect(XmlComment.from(verboseXml).value,
         equals(verbose_values.commentValues.first));
 
     final comments = XmlComment.parseString(verboseXml);
@@ -361,7 +361,7 @@ void main() async {
     }
 
     // Extract and validate all Conditional Sections.
-    expect(XmlConditional.fromString(verboseXml).toString(),
+    expect(XmlConditional.from(verboseXml).toString(),
         equals(verbose_values.conditionalSections.last));
 
     expect(XmlConditional.parseString(verboseXml).length, equals(1));
@@ -377,7 +377,7 @@ void main() async {
     }
 
     // Extract and validate all Entity Declarations.
-    expect(XmlEntity.fromString(verboseXml).toString(),
+    expect(XmlEntity.from(verboseXml).toString(),
         equals(verbose_values.entities.first));
 
     final entities = XmlEntity.parseString(verboseXml);
@@ -389,7 +389,7 @@ void main() async {
     }
 
     // Extract and validate all Element Type Definitions.
-    expect(XmlEtd.fromString(verboseXml).toString(),
+    expect(XmlEtd.from(verboseXml).toString(),
         equals(verbose_values.etds.first));
 
     final etds = XmlEtd.parseString(verboseXml);
@@ -401,7 +401,7 @@ void main() async {
     }
 
     // Extract and validate all ATTLIST Declarations.
-    expect(XmlAttlist.fromString(verboseXml).toString(),
+    expect(XmlAttlist.from(verboseXml).toString(),
         equals(verbose_values.attlists.first));
 
     final attlists = XmlAttlist.parseString(verboseXml);
@@ -413,7 +413,7 @@ void main() async {
     }
 
     // Extract and validate all Notation Declarations.
-    expect(XmlNotation.fromString(verboseXml).toString(),
+    expect(XmlNotation.from(verboseXml).toString(),
         equals(verbose_values.notations.first));
 
     final notations = XmlNotation.parseString(verboseXml);

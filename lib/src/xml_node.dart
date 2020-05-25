@@ -73,7 +73,7 @@ abstract class XmlNode {
   /// nodes, regardless of type, will be returned.
   ///
   /// Returns `null` if [string] is empty.
-  static XmlNode fromString(
+  factory XmlNode.from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,

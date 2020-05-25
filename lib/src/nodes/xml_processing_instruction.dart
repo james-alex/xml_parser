@@ -59,7 +59,7 @@ class XmlProcessingInstruction implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no XML Processing Instruction was found.
-  static XmlProcessingInstruction fromString(
+  factory XmlProcessingInstruction.from(
     String string, {
     bool trimWhitespace = true,
   }) {
