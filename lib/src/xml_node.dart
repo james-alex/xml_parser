@@ -33,8 +33,6 @@ export './nodes/xml_text.dart';
 /// The base class for all XML nodes.
 @immutable
 abstract class XmlNode {
-  XmlNode._();
-
   /// Returns this node as a formatted string.
   ///
   /// Each child is returned further indented by [indent] with
@@ -181,7 +179,7 @@ abstract class XmlNode {
           // If it's a XML declaration...
           setNode(Delimiters.xmlDeclaration);
           if (node != null) {
-            xmlNode = XmlDeclaration.fromString(
+            xmlNode = XmlDeclaration.from(
               node,
               trimWhitespace: false,
             );
@@ -190,7 +188,7 @@ abstract class XmlNode {
           // If it's a processing instruction declaration...
           setNode(Delimiters.processingInstruction);
           if (node != null) {
-            xmlNode = XmlProcessingInstruction.fromString(
+            xmlNode = XmlProcessingInstruction.from(
               node,
               trimWhitespace: false,
             );
@@ -213,7 +211,7 @@ abstract class XmlNode {
           }
 
           // Parse the node as a comment.
-          xmlNode = XmlComment.fromString(node, trimWhitespace: false);
+          xmlNode = XmlComment.from(node, trimWhitespace: false);
         } else {
           // If it's a markup delimiter...
           final type = _markupStartDelimiter
@@ -224,7 +222,7 @@ abstract class XmlNode {
           if (type == 'ATTLIST') {
             setNode(Delimiters.attlist);
             if (node != null) {
-              xmlNode = XmlAttlist.fromString(
+              xmlNode = XmlAttlist.from(
                 node,
                 trimWhitespace: false,
               );
@@ -233,13 +231,13 @@ abstract class XmlNode {
             setNode(Delimiters.cdata);
             if (node != null) {
               if (parseCdataAsText) {
-                xmlNode = XmlText.fromString(
+                xmlNode = XmlText.from(
                   node,
                   trimWhitespace: false,
                   isMarkup: true,
                 );
               } else {
-                xmlNode = XmlCdata.fromString(
+                xmlNode = XmlCdata.from(
                   node,
                   trimWhitespace: false,
                 );
@@ -248,7 +246,7 @@ abstract class XmlNode {
           } else if (type == 'DOCTYPE') {
             setNode(Delimiters.doctype);
             if (node != null) {
-              xmlNode = XmlDoctype.fromString(
+              xmlNode = XmlDoctype.from(
                 node,
                 parseCharacterEntities: parseCharacterEntities,
                 parseComments: true,
@@ -259,7 +257,7 @@ abstract class XmlNode {
           } else if (type == 'ELEMENT') {
             setNode(Delimiters.etd);
             if (node != null) {
-              xmlNode = XmlEtd.fromString(
+              xmlNode = XmlEtd.from(
                 node,
                 trimWhitespace: false,
               );
@@ -267,7 +265,7 @@ abstract class XmlNode {
           } else if (type == 'ENTITY') {
             setNode(Delimiters.entity);
             if (node != null) {
-              xmlNode = XmlEntity.fromString(
+              xmlNode = XmlEntity.from(
                 node,
                 trimWhitespace: trimWhitespace,
               );
@@ -278,7 +276,7 @@ abstract class XmlNode {
                   type.endsWith(';'))) {
             setNode(Delimiters.conditional);
             if (node != null) {
-              xmlNode = XmlConditional.fromString(node,
+              xmlNode = XmlConditional.from(node,
                   parseCharacterEntities: parseCharacterEntities,
                   parseComments: true,
                   trimWhitespace: false,
@@ -287,13 +285,13 @@ abstract class XmlNode {
           } else if (type == 'NOTATION') {
             setNode(Delimiters.notation);
             if (node != null) {
-              xmlNode = XmlNotation.fromString(
+              xmlNode = XmlNotation.from(
                 node,
                 trimWhitespace: false,
               );
             }
           } else {
-            xmlNode = XmlText.fromString(
+            xmlNode = XmlText.from(
               node,
               isMarkup: true,
               parseCharacterEntities: parseCharacterEntities,
@@ -324,7 +322,7 @@ abstract class XmlNode {
           }
 
           if (node != null) {
-            xmlNode = XmlElement.fromString(node,
+            xmlNode = XmlElement.from(node,
                 parseCharacterEntities: parseCharacterEntities,
                 parseComments: true,
                 trimWhitespace: false,
@@ -336,7 +334,7 @@ abstract class XmlNode {
       if (xmlNode == null) {
         setNode(_delimiter);
 
-        xmlNode = XmlText.fromString(
+        xmlNode = XmlText.from(
           node,
           parseCharacterEntities: parseCharacterEntities,
           trimWhitespace: false,
@@ -358,7 +356,7 @@ abstract class XmlNode {
 
     if (string.isNotEmpty &&
         (returnNodesOfType == null || returnNodesOfType.contains(XmlText))) {
-      nodes.add(XmlText.fromString(
+      nodes.add(XmlText.from(
         string,
         parseCharacterEntities: parseCharacterEntities,
         trimWhitespace: false,
@@ -426,7 +424,7 @@ abstract class XmlNode {
         final nodeType = returnNodesOfType.first;
 
         if (nodeType == XmlDocument) {
-          return XmlDocument.fromString(
+          return XmlDocument.from(
             document,
             parseCharacterEntities: parseCharacterEntities,
             parseComments: parseComments,
