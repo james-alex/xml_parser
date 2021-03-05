@@ -4,12 +4,12 @@ import './helpers.dart' as helpers;
 /// GetNode functions should accept a [RegExpMatch] and return an [XmlNode].
 typedef GetNode<T> = T Function(RegExpMatch node);
 
-/// A class containing [from] and [parseString] methods to be
+/// A class containing [fromString] and [parseString] methods to be
 /// used by [XmlNode]s that follow the same pattern for parsing.
 class StringParser<T> {
   /// Returns the first node of type [T] found
   /// in [input] matched by [delimiter].
-  T from({
+  T fromString({
     @required String input,
     @required RegExp delimiter,
     @required GetNode<T> getNode,
