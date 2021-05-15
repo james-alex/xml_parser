@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
 import '../helpers/string_parser.dart';
 import '../xml_node.dart';
 
@@ -10,17 +9,17 @@ import '../xml_node.dart';
 ///
 /// See: https://www.w3.org/TR/xml/#sec-prolog-dtd
 @immutable
-class XmlDeclaration implements XmlNode {
+class XmlDeclaration extends XmlNodeWithAttributes {
   /// The XML declaration.
   ///
   /// All valid XML documents should begin with an XML declaration.
   ///
   /// [version] is required and must not be null.
-  XmlDeclaration({
-    @required this.version,
+  const XmlDeclaration({
+    required this.version,
     this.encoding,
     this.standalone,
-  }) : assert(version != null);
+  });
 
   /// The version of the XML standard this document conforms to.
   final String version;
@@ -30,51 +29,26 @@ class XmlDeclaration implements XmlNode {
   /// This is typically an IANA character set.
   ///
   /// This value is optional.
-  final String encoding;
+  final String? encoding;
 
   /// Should be `true` if this document only contains internal DTD,
   /// and `false` if this document contains external DTD.
   ///
   /// This value is optional.
-  final bool standalone;
+  final bool? standalone;
 
   @override
-  String toString([bool doubleQuotes = true]) {
-    assert(doubleQuotes != null);
-
+  String toString({bool doubleQuotes = true}) {
     final quotationMark = (doubleQuotes) ? '"' : '\'';
-
     final encoding = (this.encoding != null)
         ? ' encoding=$quotationMark${this.encoding}$quotationMark'
         : '';
-
     final standalone = (this.standalone != null)
-        ? ' standalone=$quotationMark${(this.standalone) ? 'yes' : 'no'}'
+        ? ' standalone=$quotationMark${(this.standalone!) ? 'yes' : 'no'}'
             '$quotationMark'
         : '';
-
     return '<?xml version=$quotationMark$version'
         '$quotationMark$encoding$standalone ?>';
-  }
-
-  @override
-  String toFormattedString({
-    int nestingLevel = 0,
-    String indent = '\t',
-    // TODO: int lineLength = 80,
-    bool doubleQuotes = true,
-  }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(doubleQuotes != null);
-
-    var declaration =
-        helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return declaration;
   }
 
   /// Returns the first XML declaration found in [string].
@@ -85,14 +59,11 @@ class XmlDeclaration implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no XML declaration was found.
-  factory XmlDeclaration.from(
+  static XmlDeclaration? from(
     String string, {
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-
-    return _parser.fromString(
+    return StringParser.from<XmlDeclaration>(
       input: string,
       delimiter: Delimiters.xmlDeclaration,
       getNode: _getDeclaration,
@@ -113,18 +84,16 @@ class XmlDeclaration implements XmlNode {
   /// but must be `>= start` if provided.
   ///
   /// Returns `null` if no XML declarations were found.
-  static List<XmlDeclaration> parseString(
+  static List<XmlDeclaration>? parseString(
     String string, {
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
 
-    return _parser.parseString(
+    return StringParser.parse<XmlDeclaration>(
       input: string,
       delimiter: Delimiters.xmlDeclaration,
       getNode: _getDeclaration,
@@ -136,14 +105,12 @@ class XmlDeclaration implements XmlNode {
 
   /// Builds a [XmlDeclaration] from a [RegExpMatch] if the
   /// captured values are valid, otherwise returns `null`.
-  static XmlDeclaration _getDeclaration(RegExpMatch declaration) {
-    assert(declaration != null);
-
+  static XmlDeclaration? _getDeclaration(RegExpMatch declaration) {
     final attributeData = declaration.namedGroup('attributes');
 
-    String version;
-    String encoding;
-    bool standalone;
+    String? version;
+    String? encoding;
+    bool? standalone;
 
     if (attributeData != null) {
       final attributes = XmlAttribute.parseString(
@@ -152,7 +119,7 @@ class XmlDeclaration implements XmlNode {
         trimWhitespace: false,
       );
 
-      if (attributes.isEmpty) return null;
+      if (attributes!.isEmpty) return null;
 
       for (var attribute in attributes) {
         switch (attribute.name.toLowerCase()) {
@@ -164,8 +131,11 @@ class XmlDeclaration implements XmlNode {
             break;
           case 'standalone':
             final value = attribute.value.toLowerCase();
-            standalone =
-                (value == 'yes') ? true : (value == 'no') ? false : null;
+            standalone = (value == 'yes')
+                ? true
+                : (value == 'no')
+                    ? false
+                    : null;
             break;
         }
       }
@@ -179,10 +149,6 @@ class XmlDeclaration implements XmlNode {
       standalone: standalone,
     );
   }
-
-  /// Contains methods to parse strings for [XmlDeclaration] nodes.
-  static final StringParser<XmlDeclaration> _parser =
-      StringParser<XmlDeclaration>();
 
   @override
   bool operator ==(Object o) =>

@@ -1,7 +1,7 @@
 import 'package:html_character_entities/html_character_entities.dart';
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
+import '../helpers/formatters.dart';
 import '../xml_node.dart';
 
 /// A plain text value.
@@ -9,7 +9,7 @@ import '../xml_node.dart';
 /// This node is should be nested within an element,
 /// but the parser doesn't require it.
 @immutable
-class XmlText implements XmlNode {
+class XmlText extends XmlNode {
   /// A plain text value.
   ///
   /// This node is should be nested within an element,
@@ -21,9 +21,7 @@ class XmlText implements XmlNode {
   /// will be ignored.
   ///
   /// Neither [value] or [isMarkup] may be `null`.
-  XmlText(this.value, {this.isMarkup = false})
-      : assert(value != null),
-        assert(isMarkup != null);
+  const XmlText(this.value, {this.isMarkup = false});
 
   /// Plain text value.
   final String value;
@@ -52,12 +50,9 @@ class XmlText implements XmlNode {
     bool encodeCharacterEntities = true,
     String encodeCharacters = '&<>',
   }) {
-    assert(encodeCharacterEntities != null);
-
     if (!isMarkup && encodeCharacterEntities) {
       return HtmlCharacterEntities.encode(value, characters: encodeCharacters);
     }
-
     return value;
   }
 
@@ -65,25 +60,14 @@ class XmlText implements XmlNode {
   String toFormattedString({
     int nestingLevel = 0,
     String indent = '\t',
-    // TODO: int lineLength = 80,
     bool encodeCharacterEntities = true,
     String encodeCharacters = '&<>',
   }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(encodeCharacterEntities != null);
-
-    final value = toString(
+    assert(nestingLevel >= 0);
+    return toString(
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
-    );
-
-    var text = helpers.formatLine(value, nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return text;
+    ).formatLine(nestingLevel, indent);
   }
 
   /// Returns [string] as an XML text node.
@@ -99,25 +83,17 @@ class XmlText implements XmlNode {
   /// If [trimWhitespace] is `true`, unnecessary whitespace between nodes
   /// will be removed and all remaining whitespace will be replaced with
   /// a single space. [trimWhitespace] must not be `null`.
-  factory XmlText.from(
+  static XmlText from(
     String string, {
     bool parseCharacterEntities = true,
     bool isMarkup = false,
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(isMarkup != null);
-    assert(trimWhitespace != null);
-
-    string = helpers.removeComments(string);
-
-    if (trimWhitespace) string = helpers.trimWhitespace(string);
-
+    string = string.removeComments();
+    if (trimWhitespace) string = string.trimWhitespace();
     if (!isMarkup && parseCharacterEntities) {
       string = HtmlCharacterEntities.decode(string);
     }
-
     return XmlText(string, isMarkup: isMarkup);
   }
 
@@ -138,44 +114,36 @@ class XmlText implements XmlNode {
   /// but must be `>= start` if provided.
   ///
   /// Returns `null` if no text nodes are found.
-  static List<XmlText> parseString(
+  static List<XmlText>? parseString(
     String string, {
     bool parseCharacterEntities = true,
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
 
-    string = helpers.removeComments(string);
-
-    if (trimWhitespace) string = helpers.trimWhitespace(string);
+    string = string.removeComments();
+    if (trimWhitespace) string = string.trimWhitespace();
 
     if (!string.contains(RegExp(r'<.*>', dotAll: true))) {
       return <XmlText>[XmlText(string)];
     }
 
     final text = <XmlText>[];
-
     var textCount = 0;
 
     // Capture any text found before the first node.
     final firstNode = string.indexOf('<');
-
     if (firstNode >= 0) {
       var prependedText = string.substring(0, firstNode).trim();
-
       if (prependedText.isNotEmpty) {
         if (parseCharacterEntities) {
           prependedText = HtmlCharacterEntities.decode(prependedText);
         }
 
         if (start == 0) text.add(XmlText(prependedText));
-
         textCount++;
 
         if (stop != null && textCount > stop) {
@@ -194,14 +162,14 @@ class XmlText implements XmlNode {
     for (var match in matches) {
       var matchedText = match.namedGroup('text');
 
-      if (matchedText.isEmpty) continue;
+      if (matchedText?.isEmpty == true) continue;
 
       if (textCount >= start) {
         if (parseCharacterEntities) {
-          matchedText = HtmlCharacterEntities.decode(matchedText);
+          matchedText = HtmlCharacterEntities.decode(matchedText!);
         }
 
-        text.add(XmlText(matchedText));
+        text.add(XmlText(matchedText!));
       }
 
       textCount++;

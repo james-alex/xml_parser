@@ -1,7 +1,7 @@
 import 'package:html_character_entities/html_character_entities.dart';
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
+import '../helpers/formatters.dart';
 
 /// An attribute of a XML element.
 @immutable
@@ -9,10 +9,7 @@ class XmlAttribute {
   /// An attribute of a XML element.
   ///
   /// [name] must not be `null` or empty.
-  XmlAttribute(
-    this.name,
-    this.value,
-  ) : assert(name != null && name.isNotEmpty);
+  const XmlAttribute(this.name, this.value) : assert(name.length > 0);
 
   /// The name of the attribute.
   final String name;
@@ -26,19 +23,12 @@ class XmlAttribute {
     bool encodeCharacterEntities = true,
     String encodeCharacters = '&<>"\'',
   }) {
-    assert(doubleQuotes != null);
-    assert(encodeCharacterEntities != null);
-
     final quotationMark = (doubleQuotes) ? '"' : '\'';
-
     var value = this.value;
-
     if (encodeCharacterEntities) {
       value = HtmlCharacterEntities.encode(value, checkAmpsForEntities: true);
     }
-
     value = quotationMark + value + quotationMark;
-
     return '$name=$value';
   }
 
@@ -50,26 +40,17 @@ class XmlAttribute {
   /// character. [parseCharacterEntities] must not be `null`.
   ///
   /// Returns `null` if no attributes are found.
-  factory XmlAttribute.from(
+  static XmlAttribute? from(
     String string, {
     bool parseCharacterEntities = true,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-
-    string = helpers.removeComments(string);
-
+    string = string.removeComments();
     final attribute = Delimiters.attribute.firstMatch(string);
-
     if (attribute == null) return null;
-
     final name = attribute.namedGroup('name');
-
     var value = attribute.namedGroup('value');
-
-    if (parseCharacterEntities) value = HtmlCharacterEntities.decode(value);
-
-    return XmlAttribute(name, value);
+    if (parseCharacterEntities) value = HtmlCharacterEntities.decode(value!);
+    return XmlAttribute(name!, value!);
   }
 
   /// Returns a list of every attribute found in [string].
@@ -89,48 +70,37 @@ class XmlAttribute {
   /// `null`, but must be `>= start` if provided.
   ///
   /// Returns `null` if no attributes are found.
-  static List<XmlAttribute> parseString(
+  static List<XmlAttribute>? parseString(
     String string, {
     bool parseCharacterEntities = true,
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
 
-    string = helpers.removeComments(string);
-
-    if (trimWhitespace) string = helpers.trimWhitespace(string);
+    string = string.removeComments();
+    if (trimWhitespace) string = string.trimWhitespace();
 
     final matches = Delimiters.attribute.allMatches(string);
-
     if (matches.isEmpty || start >= matches.length) return null;
 
     final attributes = <XmlAttribute>[];
-
     var attributeCount = 0;
 
     for (var match in matches) {
       final name = match.namedGroup('name');
-
       if (name == null) continue;
-
       if (attributeCount >= start) {
         var value = match.namedGroup('value');
-
-        if (value != null) value = helpers.stripDelimiters(value);
-
-        if (parseCharacterEntities) value = HtmlCharacterEntities.decode(value);
-
-        attributes.add(XmlAttribute(name, value));
+        if (value != null) value = value.stripDelimiters();
+        if (parseCharacterEntities) {
+          value = HtmlCharacterEntities.decode(value!);
+        }
+        attributes.add(XmlAttribute(name, value!));
       }
-
       attributeCount++;
-
       if (stop != null && attributeCount > stop) break;
     }
 

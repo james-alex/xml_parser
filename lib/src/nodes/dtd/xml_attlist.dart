@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import '../../helpers/delimiters.dart';
-import '../../helpers/helpers.dart' as helpers;
+import '../../helpers/formatters.dart' as helpers;
 import '../../helpers/string_parser.dart';
 import '../../xml_node.dart';
 
@@ -24,7 +24,7 @@ enum XmlAttlistIdentifier {
 ///
 /// See: https://www.w3.org/TR/xml/#attdecls
 @immutable
-class XmlAttlist implements XmlNode {
+class XmlAttlist extends XmlNodeWithAttributes {
   /// An Attribute-list Declaration.
   ///
   /// Attribute-list declarations are used to define the set of attributes
@@ -36,16 +36,16 @@ class XmlAttlist implements XmlNode {
   /// [type] and [defaultValue] both must not be empty if they are not `null`.
   ///
   /// [identifier] and [defaultValue] are both optional.
-  XmlAttlist({
-    @required this.element,
-    @required this.attribute,
-    @required this.type,
+  const XmlAttlist({
+    required this.element,
+    required this.attribute,
+    required this.type,
     this.identifier,
     this.defaultValue,
-  })  : assert(element != null && element.isNotEmpty),
-        assert(attribute != null && attribute.isNotEmpty),
-        assert(type == null || type.isNotEmpty),
-        assert(defaultValue == null || defaultValue.isNotEmpty);
+  })  : assert(element.length > 0),
+        assert(attribute.length > 0),
+        assert(type == null || type.length > 0),
+        assert(defaultValue == null || defaultValue.length > 0);
 
   /// The element the attribute applies to.
   final String element;
@@ -54,52 +54,27 @@ class XmlAttlist implements XmlNode {
   final String attribute;
 
   /// The type of data the attribute accepts.
-  final String type;
+  final String? type;
 
   /// Whether the attribute's value is required, optional (implied), or fixed.
-  final XmlAttlistIdentifier identifier;
+  final XmlAttlistIdentifier? identifier;
 
   /// The default value of the attribute.
   ///
   /// Only applies to attributes with a `#FIXED` identifier.
-  final String defaultValue;
+  final String? defaultValue;
 
   @override
-  String toString([bool doubleQuotes = true]) {
-    assert(doubleQuotes != null);
-
+  String toString({bool doubleQuotes = true}) {
     final type = (this.type != null) ? ' ${this.type}' : '';
-
     final identifier = (this.identifier != null)
         ? ' #${this.identifier.toString().split('.').last.toUpperCase()}'
         : '';
-
     final quotationMark = (doubleQuotes) ? '"' : '\'';
-
     final value = (defaultValue != null)
         ? ' $quotationMark$defaultValue$quotationMark'
         : '';
-
     return '<!ATTLIST $element $attribute$type$identifier$value>';
-  }
-
-  @override
-  String toFormattedString({
-    int nestingLevel = 0,
-    String indent = '\t',
-    // TODO: int lineLength = 80,
-    bool doubleQuotes = true,
-  }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-
-    var attlist =
-        helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return attlist;
   }
 
   /// Returns the first DTD Attlist Declaration found in [string].
@@ -110,16 +85,11 @@ class XmlAttlist implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid Attlist Declaration was found.
-  factory XmlAttlist.from(
+  static XmlAttlist? from(
     String string, {
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-
-    final parser = StringParser<XmlAttlist>();
-
-    return parser.fromString(
+    return StringParser.from<XmlAttlist>(
       input: string,
       delimiter: Delimiters.attlist,
       getNode: _getAttlist,
@@ -140,20 +110,15 @@ class XmlAttlist implements XmlNode {
   /// `null`, but must be `>= start` if provided.
   ///
   /// Returns `null` if no valid Attlist Declarations were found.
-  static List<XmlAttlist> parseString(
+  static List<XmlAttlist>? parseString(
     String string, {
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
-
-    final parser = StringParser<XmlAttlist>();
-
-    return parser.parseString(
+    return StringParser.parse<XmlAttlist>(
       input: string,
       delimiter: Delimiters.attlist,
       getNode: _getAttlist,
@@ -165,36 +130,28 @@ class XmlAttlist implements XmlNode {
 
   /// Builds a [XmlAttlist] node from a [RegExpMatch] if the captured
   /// values are valid, otherwise returns `null`.
-  static XmlAttlist _getAttlist(RegExpMatch attlist) {
-    assert(attlist != null);
-
+  static XmlAttlist? _getAttlist(RegExpMatch attlist) {
     final element = attlist.namedGroup('element');
-
     if (element == null) return null;
-
     final attribute = attlist.namedGroup('attribute');
-
     if (attribute == null) return null;
-
     final type = attlist.namedGroup('type')?.trimRight();
-
     final identifier = attlist.namedGroup('identifier')?.toUpperCase();
-
     final defaultValue = attlist.namedGroup('defaultValue')?.trim();
 
     return XmlAttlist(
       element: element,
       attribute: attribute,
-      type: type.isNotEmpty ? type : null,
-      identifier: (identifier == '#REQUIRED' || type == '#REQUIRED')
+      type: type?.isNotEmpty == true ? type : null,
+      identifier: identifier == '#REQUIRED' || type == '#REQUIRED'
           ? XmlAttlistIdentifier.required
-          : (identifier == '#IMPLIED' || type == '#IMPLIED')
+          : identifier == '#IMPLIED' || type == '#IMPLIED'
               ? XmlAttlistIdentifier.implied
-              : (identifier == '#FIXED' || type == '#FIXED')
+              : identifier == '#FIXED' || type == '#FIXED'
                   ? XmlAttlistIdentifier.fixed
                   : null,
       defaultValue:
-          (defaultValue == null) ? null : helpers.stripDelimiters(defaultValue),
+          defaultValue == null ? null : defaultValue.stripDelimiters(),
     );
   }
 

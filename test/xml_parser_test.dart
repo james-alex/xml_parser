@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:xml_parser/xml_parser.dart';
-import 'package:xml_parser/src/helpers/helpers.dart' show trimWhitespace;
+import 'package:xml_parser/src/helpers/formatters.dart' show StringFormatters;
 import './test_values/hacker_news.dart' as hacker_news_values;
 import './test_values/library.dart' as library_values;
 import './test_values/verbose.dart' as verbose_values;
@@ -16,33 +16,33 @@ void main() async {
   test('Document Parsing (HackerNews)', () {
     // Parse the test document.
     final hackerNews =
-        XmlDocument.from(hackerNewsXml, parseCharacterEntities: false);
+        XmlDocument.from(hackerNewsXml, parseCharacterEntities: false)!;
 
     // Check if the comment at the top of the document was ignored.
     expect(hackerNews.children.first, equals(hackerNews.root));
 
     // Check if the root element is an `rss` element.
-    expect(hackerNews.root.name, equals('rss'));
+    expect(hackerNews.root?.name, equals('rss'));
 
-    expect(hackerNews.root.getAttribute('version'), equals('2.0'));
+    expect(hackerNews.root?.getAttribute('version'), equals('2.0'));
 
     // Check if the channel elements match their expected values.
     final channel = hackerNews.getElement('channel');
 
-    expect(channel.getChild('title').text, equals('Hacker News'));
+    expect(channel?.getChild('title')?.text, equals('Hacker News'));
 
     expect(
-      channel.getChild('link').text,
+      channel?.getChild('link')?.text,
       equals('https://news.ycombinator.com/'),
     );
 
     expect(
-      channel.getChild('description').text,
+      channel?.getChild('description')?.text,
       equals('Links for the intellectually curious, ranked by readers.'),
     );
 
     // Check if the items match their expected values.
-    final items = channel.getChildren('item');
+    final items = channel?.getChildren('item');
 
     expect(hacker_news_values.validateItems(items), equals(true));
 
@@ -67,21 +67,20 @@ void main() async {
     final title =
         XmlElement.from(hackerNewsXml, returnElementsNamed: ['title']);
 
-    expect(title.text, equals('Hacker News'));
+    expect(title?.text, equals('Hacker News'));
 
     // Extract the first `link` element found, and
     // compare its value to the expected value.
-    final link =
-        XmlElement.from(hackerNewsXml, returnElementsNamed: ['link']);
+    final link = XmlElement.from(hackerNewsXml, returnElementsNamed: ['link']);
 
-    expect(link.text, equals('https://news.ycombinator.com/'));
+    expect(link?.text, equals('https://news.ycombinator.com/'));
 
     // Extract the first `description` element found,
     // and compare its value to the expected value.
-    final description = XmlElement.from(hackerNewsXml,
-        returnElementsNamed: ['description']);
+    final description =
+        XmlElement.from(hackerNewsXml, returnElementsNamed: ['description']);
 
-    expect(description.text,
+    expect(description?.text,
         equals('Links for the intellectually curious, ranked by readers.'));
 
     // Extract all of the `title` elements, excluding the first one.
@@ -109,7 +108,7 @@ void main() async {
         returnElementsNamed: ['description'], start: 1);
 
     // Extract all of the CDATA nodes.
-    final cdata = XmlCdata.parseString(hackerNewsXml);
+    final cdata = XmlCdata.parseString(hackerNewsXml)!;
 
     // Get the expected values of all of the extracted nodes
     final titleValues = <String>[];
@@ -119,27 +118,27 @@ void main() async {
     final descriptionValues = <String>[];
 
     for (var item in hacker_news_values.itemValues) {
-      titleValues.add(item['title']);
-      linkValues.add(item['link']);
-      pubDateValues.add(item['pubDate']);
-      commentsValues.add(item['comments']);
-      descriptionValues.add(item['description']);
+      titleValues.add(item['title']!);
+      linkValues.add(item['link']!);
+      pubDateValues.add(item['pubDate']!);
+      commentsValues.add(item['comments']!);
+      descriptionValues.add(item['description']!);
     }
 
-    expect(titles.length, equals(titleValues.length));
-    expect(links.length, equals(linkValues.length));
+    expect(titles?.length, equals(titleValues.length));
+    expect(links?.length, equals(linkValues.length));
     expect(pubDateValues.length, equals(pubDateValues.length));
     expect(commentsValues.length, equals(commentsValues.length));
-    expect(descriptions.length, equals(descriptionValues.length));
+    expect(descriptions?.length, equals(descriptionValues.length));
     expect(cdata.length, equals(descriptionValues.length));
 
     // Compare all of the extracted nodes to their expected values.
     for (var i = 0; i < cdata.length; i++) {
-      expect(titles[i].text, equals(titleValues[i]));
-      expect(links[i].text, equals(linkValues[i]));
-      expect(pubDates[i].text, equals(pubDateValues[i]));
-      expect(comments[i].text, equals(commentsValues[i]));
-      expect(descriptions[i].children.first.toString(),
+      expect(titles![i].text, equals(titleValues[i]));
+      expect(links![i].text, equals(linkValues[i]));
+      expect(pubDates![i].text, equals(pubDateValues[i]));
+      expect(comments![i].text, equals(commentsValues[i]));
+      expect(descriptions![i].children!.first.toString(),
           equals(descriptionValues[i]));
       expect(cdata[i].toString(), equals(descriptionValues[i]));
     }
@@ -149,7 +148,7 @@ void main() async {
     final versioned = XmlElement.from(
       hackerNewsXml,
       returnElementsWithAttributesNamed: ['version'],
-    );
+    )!;
 
     expect(versioned.name, equals('rss'));
     expect(versioned.getAttribute('version'), equals('2.0'));
@@ -163,7 +162,7 @@ void main() async {
   // extracted values to a map of the expected values.
   test('Document Parsing (Library)', () {
     // Parse the test document.
-    final library = XmlDocument.from(libraryXml, parseComments: true);
+    final library = XmlDocument.from(libraryXml, parseComments: true)!;
 
     // Check if the correct number of root level nodes were parsed.
     expect(library.children.length, equals(4));
@@ -173,18 +172,16 @@ void main() async {
         equals('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'));
 
     // Check if the XML DocType Declaration was parsed as expected.
-    final doctype = trimWhitespace(
-        RegExp(r'<!DOCTYPE.*?]>', dotAll: true).stringMatch(libraryXml));
+    final doctype = RegExp(r'<!DOCTYPE.*?]>', dotAll: true)
+        .stringMatch(libraryXml)!
+        .trimWhitespace();
 
     expect(library.doctype.toString(), equals(doctype));
 
     // Check if the document's elements were parsed as expected.
-    final books = library.root.getChildren('book');
+    final books = library.root!.getChildren('book')!;
 
     expect(library_values.validateBooks(books), equals(true));
-
-    // TODO: Once the `lineLength` option is added to the `toFormattedString()`
-    // methods: expect(library.toFormattedString(), equals(libraryXml));
   });
 
   // Test the node extraction methods and compare the extracted
@@ -192,7 +189,7 @@ void main() async {
   test('Node Extraction (Library)', () {
     // Extract all 'book' elements and compare them to their expected values.
     final books =
-        XmlElement.parseString(libraryXml, returnElementsNamed: ['book']);
+        XmlElement.parseString(libraryXml, returnElementsNamed: ['book'])!;
 
     expect(library_values.validateBooks(books), equals(true));
 
@@ -204,7 +201,7 @@ void main() async {
       book['quotes'].forEach(textValues.add);
     }
 
-    final textNodes = XmlText.parseString(libraryXml);
+    final textNodes = XmlText.parseString(libraryXml)!;
 
     expect(textNodes.length, equals(textValues.length));
 
@@ -217,13 +214,14 @@ void main() async {
   final verboseXml =
       await File('test/test_documents/verbose.xml').readAsString();
 
-  final verboseDoctype = trimWhitespace(
-      RegExp(r'<!DOCTYPE.*?]>', dotAll: true).stringMatch(verboseXml));
+  final verboseDoctype = RegExp(r'<!DOCTYPE.*?]>', dotAll: true)
+      .stringMatch(verboseXml)!
+      .trimWhitespace();
 
   test('Document Parsing (Verbose)', () {
     // Parse the test document.
     final verbose = XmlDocument.from(verboseXml,
-        parseComments: true, parseCdataAsText: false);
+        parseComments: true, parseCdataAsText: false)!;
 
     // Check if the correct number of root level nodes were parsed.
     expect(verbose.children.length, equals(5));
@@ -239,11 +237,11 @@ void main() async {
     // Check if the XML DocType Declaration was parsed as expected.
     expect(verbose.doctype.toString(), equals(verboseDoctype));
 
-    expect(verbose.doctype.internalDtd.length,
+    expect(verbose.doctype!.internalDtd!.length,
         equals(verbose_values.internalDtd.length));
 
-    for (var i = 0; i < verbose.doctype.internalDtd.length; i++) {
-      final node = verbose.doctype.internalDtd[i];
+    for (var i = 0; i < verbose.doctype!.internalDtd!.length; i++) {
+      final node = verbose.doctype!.internalDtd![i];
 
       expect(node.runtimeType, equals(verbose_values.internalDtdTypes[i]));
 
@@ -255,37 +253,36 @@ void main() async {
         verbose.children[3].toString(), equals(verbose_values.comments.first));
 
     // Check if the documents elements were parsed as expected.
-    final root = verbose.root;
+    final root = verbose.root!;
 
     expect(root.hasAttributeWhere('author', '&author;'), equals(true));
 
-    expect(verbose_values.validateChildren(root.children), equals(true));
+    expect(verbose_values.validateChildren(root.children!), equals(true));
   });
 
-  final verboseRootElementValue = trimWhitespace(
-    '<root${verboseXml.split('<root').last}',
-  ).replaceAll(RegExp(r'(?<=(?<!!)\[) (?=\S)|(?<=\S) (?=])'), '');
+  final verboseRootElementValue = '<root${verboseXml.split('<root').last}'
+      .trimWhitespace()
+      .replaceAll(RegExp(r'(?<=(?<!!)\[) (?=\S)|(?<=\S) (?=])'), '');
 
   test('Node Extraction (Verbose)', () {
     // Extract and validate the XML Declaration.
     expect(XmlDeclaration.from(verboseXml).toString(),
         equals(verbose_values.xmlDeclaration));
 
-    expect(XmlDeclaration.parseString(verboseXml).first.toString(),
+    expect(XmlDeclaration.parseString(verboseXml)?.first.toString(),
         equals(verbose_values.xmlDeclaration));
 
     // Extract and validate the Processing Instruction Declaration.
     expect(XmlProcessingInstruction.from(verboseXml).toString(),
         equals(verbose_values.processingInstruction));
 
-    expect(XmlProcessingInstruction.parseString(verboseXml).first.toString(),
+    expect(XmlProcessingInstruction.parseString(verboseXml)?.first.toString(),
         equals(verbose_values.processingInstruction));
 
     // Extract and validate the DocType Declaration.
-    expect(
-        XmlDoctype.from(verboseXml).toString(), equals(verboseDoctype));
+    expect(XmlDoctype.from(verboseXml).toString(), equals(verboseDoctype));
 
-    expect(XmlDoctype.parseString(verboseXml).first.toString(),
+    expect(XmlDoctype.parseString(verboseXml)?.first.toString(),
         equals(verboseDoctype));
 
     // Extract and validate the `root` element.
@@ -303,13 +300,13 @@ void main() async {
         verboseXml,
         returnElementsNamed: ['root'],
         parseComments: true,
-      ).first.toString(),
+      )?.first.toString(),
       equals(verboseRootElementValue),
     );
 
     // Extract and validate all `text` elements.
     final textElements = XmlElement.parseString(verboseXml,
-        returnElementsNamed: ['text'], global: true);
+        returnElementsNamed: ['text'], global: true)!;
 
     expect(textElements.length, equals(verbose_values.textValues.length));
 
@@ -320,27 +317,23 @@ void main() async {
 
     // Extract and validate all `image` elements.
     final imageElements = XmlElement.parseString(verboseXml,
-        returnElementsNamed: ['image'], global: true);
+        returnElementsNamed: ['image'], global: true)!;
 
     expect(imageElements.length, equals(verbose_values.imageElements.length));
 
     for (var i = 0; i < imageElements.length; i++) {
       expect(imageElements[i].hasAttribute('width'), equals(true));
-
-      expect(int.tryParse(imageElements[i].getAttribute('width')) != null,
+      expect(int.tryParse(imageElements[i].getAttribute('width')!) != null,
           equals(true));
-
       expect(imageElements[i].hasAttribute('height'), equals(true));
-
-      expect(int.tryParse(imageElements[i].getAttribute('height')) != null,
+      expect(int.tryParse(imageElements[i].getAttribute('height')!) != null,
           equals(true));
-
       expect(imageElements[i].hasAttribute('src'), equals(true));
 
       expect(
         imageElements[i]
             .getAttribute('src')
-            .contains(RegExp(r'test[1-3].(gif|png)')),
+            ?.contains(RegExp(r'test[1-3].(gif|png)')),
         equals(true),
       );
 
@@ -349,10 +342,10 @@ void main() async {
     }
 
     // Extract and validate all comments.
-    expect(XmlComment.from(verboseXml).value,
+    expect(XmlComment.from(verboseXml)?.value,
         equals(verbose_values.commentValues.first));
 
-    final comments = XmlComment.parseString(verboseXml);
+    final comments = XmlComment.parseString(verboseXml)!;
 
     expect(comments.length, equals(verbose_values.commentValues.length));
 
@@ -364,9 +357,9 @@ void main() async {
     expect(XmlConditional.from(verboseXml).toString(),
         equals(verbose_values.conditionalSections.last));
 
-    expect(XmlConditional.parseString(verboseXml).length, equals(1));
+    expect(XmlConditional.parseString(verboseXml)?.length, equals(1));
 
-    final conditionals = XmlConditional.parseString(verboseXml, global: true);
+    final conditionals = XmlConditional.parseString(verboseXml, global: true)!;
 
     expect(
         conditionals.length, equals(verbose_values.conditionalSections.length));
@@ -380,7 +373,7 @@ void main() async {
     expect(XmlEntity.from(verboseXml).toString(),
         equals(verbose_values.entities.first));
 
-    final entities = XmlEntity.parseString(verboseXml);
+    final entities = XmlEntity.parseString(verboseXml)!;
 
     expect(entities.length, equals(verbose_values.entities.length));
 
@@ -389,10 +382,10 @@ void main() async {
     }
 
     // Extract and validate all Element Type Definitions.
-    expect(XmlEtd.from(verboseXml).toString(),
-        equals(verbose_values.etds.first));
+    expect(
+        XmlEtd.from(verboseXml).toString(), equals(verbose_values.etds.first));
 
-    final etds = XmlEtd.parseString(verboseXml);
+    final etds = XmlEtd.parseString(verboseXml)!;
 
     expect(etds.length, equals(verbose_values.etds.length));
 
@@ -404,7 +397,7 @@ void main() async {
     expect(XmlAttlist.from(verboseXml).toString(),
         equals(verbose_values.attlists.first));
 
-    final attlists = XmlAttlist.parseString(verboseXml);
+    final attlists = XmlAttlist.parseString(verboseXml)!;
 
     expect(attlists.length, equals(verbose_values.attlists.length));
 
@@ -416,7 +409,7 @@ void main() async {
     expect(XmlNotation.from(verboseXml).toString(),
         equals(verbose_values.notations.first));
 
-    final notations = XmlNotation.parseString(verboseXml);
+    final notations = XmlNotation.parseString(verboseXml)!;
 
     expect(notations.length, equals(verbose_values.notations.length));
 

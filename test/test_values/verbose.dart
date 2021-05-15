@@ -1,8 +1,6 @@
 import 'package:xml_parser/xml_parser.dart';
 
 bool validateChildren(List<XmlNode> nodes) {
-  assert(nodes != null);
-
   if (nodes.length != children.length) {
     print('[validateChildren] nodes.length != children.length');
     print('EXPECTED: ${children.length}');
@@ -18,9 +16,6 @@ bool validateChildren(List<XmlNode> nodes) {
 }
 
 bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
-  assert(node != null);
-  assert(values != null);
-
   // Check if the node is of the expected type.
   final type = values.keys.first;
 
@@ -99,16 +94,16 @@ bool _validateNode(XmlNode node, Map<Type, dynamic> values) {
       if (!attributesAreValid) return false;
     }
     if (value.containsKey('children')) {
-      if (node.children.length != value['children'].length) {
+      if (node.children!.length != value['children'].length) {
         print('[_validateNodde] XmlElement: node.children.length '
             '!= value[\'children\'].length');
         print('EXPECTED: ${value['children'].length}');
-        print('ACTUAL: ${node.children.length}');
+        print('ACTUAL: ${node.children!.length}');
         return false;
       }
 
-      for (var i = 0; i < node.children.length; i++) {
-        if (!_validateNode(node.children[i], value['children'][i])) {
+      for (var i = 0; i < node.children!.length; i++) {
+        if (!_validateNode(node.children![i], value['children'][i])) {
           return false;
         }
       }

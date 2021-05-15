@@ -1,23 +1,19 @@
 import 'package:xml_parser/xml_parser.dart';
 
 bool validateBooks(List<XmlElement> books) {
-  assert(books != null);
-
   if (books.length != 10) return false;
 
   var valid = true;
 
   for (var book in books) {
     final title = book.getAttribute('title');
-
-    final values = bookValues[title];
-
-    final quotes = book.getChild('quotes').getChildren('quote');
+    final values = bookValues[title]!;
+    final quotes = book.getChild('quotes')!.getChildren('quote');
 
     if ((book.getAttribute('author') != values['author']) ||
         (book.getAttribute('year') != values['year']) ||
-        (book.getChild('summary').text != values['summary']) ||
-        (quotes.length != values['quotes'].length)) {
+        (book.getChild('summary')?.text != values['summary']) ||
+        (quotes!.length != values['quotes'].length)) {
       valid = false;
       break;
     }

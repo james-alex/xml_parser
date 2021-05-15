@@ -1,25 +1,24 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
-import '../helpers/node_with_children.dart';
+import '../helpers/formatters.dart';
 import '../xml_node.dart';
 
 /// An XML Conditional Section.
 ///
 /// See: https://www.w3.org/TR/xml/#sec-condition-sect
 @immutable
-class XmlConditional extends NodeWithChildren implements XmlNode {
+class XmlConditional extends XmlNodeWithChildren {
   /// An XML Conditional Section.
   ///
   /// [condition] should equal `INCLUDE`, `IGNORE`, or a reference
   /// to an [XmlEntity]. It must not be `null` or empty.
   ///
   /// [children] must not be `null`.
-  XmlConditional({
-    @required this.condition,
-    @required this.children,
-  })  : assert(condition != null && condition.isNotEmpty),
-        assert(children != null);
+  const XmlConditional({
+    required this.condition,
+    required this.children,
+  }) : assert(condition.length > 0);
 
   /// The condition, it should equal `INCLUDE`, `IGNORE`,
   /// or a reference to an [XmlEntity].
@@ -33,7 +32,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   /// any nested [XmlDoctype]s and [XmlEntity]s, load the pages
   /// they reference, and parse the DTD elements contained within.
   Future<void> loadExternalDtd() async {
-    if (children == null || children.isEmpty) return;
+    if (children.isEmpty) return;
 
     for (var i = 0; i < children.length; i++) {
       final child = children[i];
@@ -41,11 +40,13 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
       if (child is XmlConditional) {
         await child.loadExternalDtd();
       } else if (child is XmlDoctype) {
-        children[i] = await child.loadExternalDtd();
+        final externalDtd = await child.loadExternalDtd();
+        if (externalDtd != null) children[i] = externalDtd;
       } else if (child is XmlElement) {
         await child.loadExternalDtd();
       } else if (child is XmlEntity) {
-        children[i] = await child.loadExternalEntities();
+        final externalEntities = await child.loadExternalEntities();
+        if (externalEntities != null) children[i] = externalEntities;
       }
     }
 
@@ -68,19 +69,14 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   @override
   String toString({
     bool encodeCharacterEntities = true,
-    String encodeCharacters,
+    String? encodeCharacters,
     bool doubleQuotes = true,
   }) {
-    assert(encodeCharacterEntities != null);
-    assert(doubleQuotes != null);
-
-    final children = helpers.childrenToString(
-      children: this.children,
-      encodeCharacterEntities: encodeCharacterEntities,
-      encodeCharacters: encodeCharacters,
-      doubleQuotes: doubleQuotes,
-    );
-
+    final children = this.children.write(
+          encodeCharacterEntities: encodeCharacterEntities,
+          encodeCharacters: encodeCharacters,
+          doubleQuotes: doubleQuotes,
+        );
     return '<![ $condition [$children]]>';
   }
 
@@ -88,22 +84,15 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   String toFormattedString({
     int nestingLevel = 0,
     String indent = '\t',
-    // TODO: int lineLength = 80,
     bool encodeCharacterEntities = true,
-    String encodeCharacters,
+    String? encodeCharacters,
     bool doubleQuotes = true,
   }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(encodeCharacterEntities != null);
-    assert(doubleQuotes != null);
+    assert(nestingLevel >= 0);
 
-    var conditional =
-        helpers.formatLine('<![ $condition [', nestingLevel, indent);
+    var conditional = '<![ $condition ['.formatLine(nestingLevel, indent);
 
-    conditional += helpers.formatChildren(
-      children: children,
+    conditional += children.format(
       nestingLevel: nestingLevel,
       indent: indent,
       encodeCharacterEntities: encodeCharacterEntities,
@@ -111,17 +100,13 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
       doubleQuotes: doubleQuotes,
     );
 
-    conditional += helpers.formatLine(']]>', nestingLevel, indent);
-
-    // TODO: Handle lineLength
+    conditional += ']]>'.formatLine(nestingLevel, indent);
 
     return conditional;
   }
 
   /// Returns an [XmlConditional] with the condition set to `INCLUDE`.
   static XmlConditional include(List<XmlNode> children) {
-    assert(children != null);
-
     return XmlConditional(
       condition: 'INCLUDE',
       children: children,
@@ -130,8 +115,6 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
 
   /// Returns an [XmlConditional] with the condition set to `IGNORE`.
   static XmlConditional ignore(List<XmlNode> children) {
-    assert(children != null);
-
     return XmlConditional(
       condition: 'IGNORE',
       children: children,
@@ -154,19 +137,13 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   ///
   /// If [parseCdataAsText] is `true`, all CDATA sections will be
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
-  factory XmlConditional.from(
+  static XmlConditional? from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
     bool parseCdataAsText = true,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(parseComments != null);
-    assert(trimWhitespace != null);
-    assert(parseCdataAsText != null);
-
     return parseString(
       string,
       parseCharacterEntities: parseCharacterEntities,
@@ -205,7 +182,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   /// but must be `>= start` if provided.
   ///
   /// Returns `null` if no conditional sections were found.
-  static List<XmlConditional> parseString(
+  static List<XmlConditional>? parseString(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
@@ -213,34 +190,26 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
     bool parseCdataAsText = true,
     bool global = false,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(parseComments != null);
-    assert(parseCdataAsText != null);
-    assert(trimWhitespace != null);
-    assert(global != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
 
-    if (!parseComments) string = helpers.removeComments(string);
-
-    if (trimWhitespace) string = helpers.trimWhitespace(string);
+    if (!parseComments) string = string.removeComments();
+    if (trimWhitespace) string = string.trimWhitespace();
 
     final matches =
         Delimiters.conditional.copyWith(global: global).allMatches(string);
-
     if (start >= matches.length) return null;
 
     final conditionals = <XmlConditional>[];
 
     for (var i = start; i < matches.length; i++) {
       final match = matches[i];
-
       final condition = match.namedGroup('condition');
-
+      if (condition == null) continue;
       final value = match.namedGroup('value')?.trim();
+      if (value == null) continue;
 
       conditionals.add(
         XmlConditional(
@@ -251,7 +220,7 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
             parseComments: true,
             trimWhitespace: false,
             parseCdataAsText: true,
-          ),
+          )!,
         ),
       );
 
@@ -264,29 +233,10 @@ class XmlConditional extends NodeWithChildren implements XmlNode {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (o is XmlConditional) {
-      // Compare conditions
-      if (condition != o.condition) return false;
-
-      // Compare children
-      if (children == null && o.children != null) return false;
-
-      if (children != null && o.children == null) return false;
-
-      if (children != null) {
-        if (children.length != o.children.length) return false;
-
-        for (var i = 0; i < children.length; i++) {
-          if (children[i] != o.children[i]) return false;
-        }
-      }
-
-      return true;
-    }
-
-    return false;
-  }
+  bool operator ==(Object o) =>
+      o is XmlConditional &&
+      condition == o.condition &&
+      children.equals(o.children);
 
   @override
   int get hashCode => condition.hashCode ^ children.hashCode;

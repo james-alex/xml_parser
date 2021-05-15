@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
 import '../helpers/string_parser.dart';
 import '../xml_node.dart';
 
@@ -11,45 +10,27 @@ import '../xml_node.dart';
 ///
 /// See: https://www.w3.org/TR/xml/#sec-pi
 @immutable
-class XmlProcessingInstruction implements XmlNode {
+class XmlProcessingInstruction extends XmlNode {
   /// An XML Processing Instruction.
   ///
   /// XML Processing Instructions contain instructions for the
   /// application parsing the document.
   ///
   /// [target] must not be `null` or empty.
-  XmlProcessingInstruction({
-    @required this.target,
+  const XmlProcessingInstruction({
+    required this.target,
     this.content,
-  }) : assert(target != null && target.isNotEmpty);
+  }) : assert(target.length > 0);
 
   /// Refers to the application or document type the
   /// processing instruction refers to.
   final String target;
 
   /// The optional content of the processing instruction.
-  final String content;
+  final String? content;
 
   @override
   String toString() => '<?$target${content != null ? ' $content ' : ''}?>';
-
-  @override
-  String toFormattedString({
-    int nestingLevel = 0,
-    String indent = '\t',
-    // TODO: int lineLength = 80,
-  }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-
-    var processingInstruction =
-        helpers.formatLine(toString(), nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return processingInstruction;
-  }
 
   /// Returns the first XML Processing Instruction found in [string].
   /// [string] must not be `null`.
@@ -59,14 +40,11 @@ class XmlProcessingInstruction implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no XML Processing Instruction was found.
-  factory XmlProcessingInstruction.from(
+  static XmlProcessingInstruction? from(
     String string, {
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-
-    return _parser.fromString(
+    return StringParser.from<XmlProcessingInstruction>(
       input: string,
       delimiter: Delimiters.processingInstruction,
       getNode: _getProcessingInstruction,
@@ -87,18 +65,15 @@ class XmlProcessingInstruction implements XmlNode {
   /// `null`, but must be `>= start` if provided.
   ///
   /// Returns `null` if no XML Processing Instructions were found.
-  static List<XmlProcessingInstruction> parseString(
+  static List<XmlProcessingInstruction>? parseString(
     String string, {
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
-
-    return _parser.parseString(
+    return StringParser.parse<XmlProcessingInstruction>(
       input: string,
       delimiter: Delimiters.processingInstruction,
       getNode: _getProcessingInstruction,
@@ -110,11 +85,8 @@ class XmlProcessingInstruction implements XmlNode {
 
   /// Builds a [XmlProcessingInstruction] from a [RegExpMatch] if
   /// the captured values are valid, otherwise returns `null`.
-  static XmlProcessingInstruction _getProcessingInstruction(
-    RegExpMatch processingInstruction,
-  ) {
-    assert(processingInstruction != null);
-
+  static XmlProcessingInstruction? _getProcessingInstruction(
+      RegExpMatch processingInstruction) {
     final target = processingInstruction.namedGroup('target')?.trim();
 
     if (target == null || target.isEmpty) return null;
@@ -126,10 +98,6 @@ class XmlProcessingInstruction implements XmlNode {
       content: content,
     );
   }
-
-  /// Contains methods to parse strings for [XmlProcessingInstruction] nodes.
-  static final StringParser<XmlProcessingInstruction> _parser =
-      StringParser<XmlProcessingInstruction>();
 
   @override
   bool operator ==(Object o) =>

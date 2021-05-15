@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
+import '../helpers/formatters.dart';
 import '../helpers/string_parser.dart';
 import '../xml_node.dart';
 
@@ -8,7 +8,7 @@ import '../xml_node.dart';
 ///
 /// See: https://www.w3.org/TR/xml/#sec-entity-decl
 @immutable
-class XmlEntity implements XmlNode {
+class XmlEntity extends XmlNodeWithAttributes {
   /// A DTD Entity Declaration.
   ///
   /// [name] must not be `null` and must be `> 0` in length.
@@ -17,7 +17,7 @@ class XmlEntity implements XmlNode {
   ///
   /// [isSystem] and [isPublic] must not be `null`, and only
   /// one of them may be `true`.
-  XmlEntity(
+  const XmlEntity(
     this.name,
     this.value, {
     this.isParameter = false,
@@ -25,11 +25,7 @@ class XmlEntity implements XmlNode {
     this.isPublic = false,
     this.externalEntities,
     this.ndata,
-  })  : assert(name != null && name.isNotEmpty),
-        assert(value != null),
-        assert(isParameter != null),
-        assert(isSystem != null),
-        assert(isPublic != null),
+  })  : assert(name.length > 0),
         assert(!(isPublic && isSystem));
 
   /// The name of the entity.
@@ -52,11 +48,11 @@ class XmlEntity implements XmlNode {
   final bool isPublic;
 
   /// The parsed external DTD elements, if they were loaded.
-  final List<XmlEntity> externalEntities;
+  final List<XmlEntity>? externalEntities;
 
   /// NDATA defines type of data the external
   /// entity should be treated as.
-  final String ndata;
+  final String? ndata;
 
   /// Attempts to load the external entity if there is one and
   /// if [ndata] is `null`. If [ndata] is provided, the file is
@@ -65,14 +61,11 @@ class XmlEntity implements XmlNode {
   ///
   /// If the URI couldn't be reached or no DTD elements could be identified,
   /// Returns `null`.
-  Future<XmlEntity> loadExternalEntities() async {
+  Future<XmlEntity?> loadExternalEntities() async {
     if ((!isSystem && !isPublic) || ndata != null) return null;
-
-    final List<XmlNode> externalEntities =
+    final externalEntities =
         await XmlNode.fromUri(value, returnNodesOfType: [XmlEntity]);
-
     if (externalEntities == null) return null;
-
     return copyWith(externalEntities: externalEntities);
   }
 
@@ -86,17 +79,16 @@ class XmlEntity implements XmlNode {
   /// will be copied with a value of `null` if they're not provided with
   /// another value, otherwise they will default to this element's values.
   XmlEntity copyWith({
-    String name,
-    String value,
-    bool isSystem,
-    bool isPublic,
-    List<XmlEntity> externalEntities,
-    String ndata,
+    String? name,
+    String? value,
+    bool? isSystem,
+    bool? isPublic,
+    List<XmlEntity>? externalEntities,
+    String? ndata,
     bool copyNull = false,
   }) {
     assert(name == null || name.isNotEmpty);
-    assert(!(isPublic && isSystem));
-    assert(copyNull != null);
+    assert(isPublic == null || isSystem == null || !(isPublic && isSystem));
 
     if (!copyNull) {
       value ??= this.value;
@@ -106,51 +98,25 @@ class XmlEntity implements XmlNode {
 
     return XmlEntity(
       name ?? this.name,
-      value,
-      isSystem: isSystem ?? (isPublic != null)
-          ? !isPublic
-          : (this.isPublic != null) ? !this.isPublic : false,
-      isPublic: isPublic ?? (isSystem != null)
-          ? !isSystem
-          : (this.isSystem != null) ? !this.isSystem : false,
+      value!,
+      isSystem: isSystem ?? (isPublic == true ? false : this.isSystem),
+      isPublic: isPublic ?? (isSystem == true ? false : this.isPublic),
       externalEntities: externalEntities,
       ndata: ndata,
     );
   }
 
   @override
-  String toString([bool doubleQuotes = true]) {
-    assert(doubleQuotes != null);
-
+  String toString({bool doubleQuotes = true}) {
     final quotationMark = doubleQuotes ? '"' : '\'';
-
-    final identifier = isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
-
+    final identifier = isSystem
+        ? ' SYSTEM'
+        : isPublic
+            ? ' PUBLIC'
+            : '';
     final value = ' $quotationMark${this.value}$quotationMark';
-
     final ndata = (this.ndata != null) ? ' NDATA ${this.ndata}' : '';
-
     return '<!ENTITY $name$identifier$value$ndata>';
-  }
-
-  @override
-  String toFormattedString({
-    int nestingLevel = 0,
-    String indent = '\t',
-    // TODO: int lineLength = 80,
-    bool doubleQuotes = true,
-  }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(doubleQuotes != null);
-
-    var entity =
-        helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return entity;
   }
 
   /// Returns the first DTD Entity found in [string].
@@ -162,14 +128,11 @@ class XmlEntity implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid DTD entities are found.
-  factory XmlEntity.from(
+  static XmlEntity? from(
     String string, {
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-
-    return _parser.fromString(
+    return StringParser.from<XmlEntity>(
       input: string,
       delimiter: Delimiters.entity,
       getNode: _getEntity,
@@ -187,18 +150,15 @@ class XmlEntity implements XmlNode {
   /// but must be `>= start` if provided.
   ///
   /// Returns `null` if no valid DTD entities are found.
-  static List<XmlEntity> parseString(
+  static List<XmlEntity>? parseString(
     String string, {
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
-
-    return _parser.parseString(
+    return StringParser.parse<XmlEntity>(
       input: string,
       delimiter: Delimiters.entity,
       getNode: _getEntity,
@@ -210,13 +170,10 @@ class XmlEntity implements XmlNode {
 
   /// Builds a [XmlEntity] node from a [RegExpMatch] if the captured
   /// values are valid, otherwise returns `null`.
-  static XmlEntity _getEntity(RegExpMatch entity) {
-    assert(entity != null);
-
+  static XmlEntity? _getEntity(RegExpMatch entity) {
     final isParameter = entity.namedGroup('parameter') == '%';
 
     final name = entity.namedGroup('name');
-
     if (name == null) return null;
 
     final identifier = entity.namedGroup('identifier')?.toUpperCase();
@@ -225,10 +182,10 @@ class XmlEntity implements XmlNode {
     final isSystem = identifier == 'SYSTEM';
 
     var value = entity.namedGroup('value');
-    value = helpers.stripDelimiters(value);
+    if (value == null) return null;
+    value = value.stripDelimiters();
 
-    String ndata;
-
+    String? ndata;
     if (entity.namedGroup('ndataFlag') == 'NDATA') {
       ndata = entity.namedGroup('ndata');
     }
@@ -242,9 +199,6 @@ class XmlEntity implements XmlNode {
       ndata: ndata,
     );
   }
-
-  /// Contains methods to parse strings for [XmlEntity] nodes.
-  static final StringParser<XmlEntity> _parser = StringParser<XmlEntity>();
 
   @override
   bool operator ==(Object o) =>

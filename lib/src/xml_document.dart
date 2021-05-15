@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
-import './helpers/helpers.dart' as helpers;
-import './helpers/node_with_children.dart';
+import 'helpers/formatters.dart' as helpers;
 import './xml_node.dart';
 
 /// A XML document.
@@ -8,11 +7,11 @@ import './xml_node.dart';
 /// It contains optional XML Declaration and Document Type Declarations,
 /// and a root element that contains every other element nested within it.
 @immutable
-class XmlDocument extends NodeWithChildren {
+class XmlDocument extends XmlNodeWithChildren {
   /// A XML document.
   ///
   /// [nodes] must not be null.
-  XmlDocument(this.children) : assert(children != null);
+  const XmlDocument(this.children);
 
   /// The list of root level nodes in this document.
   ///
@@ -25,25 +24,25 @@ class XmlDocument extends NodeWithChildren {
   final List<XmlNode> children;
 
   /// The raw value of the XML document declaration.
-  XmlDeclaration get xmlDeclaration => children.firstWhere(
+  XmlDeclaration? get xmlDeclaration => children.cast<XmlNode?>().firstWhere(
         (child) => child.runtimeType == XmlDeclaration,
         orElse: () => null,
-      );
+      ) as XmlDeclaration?;
 
   /// The XML document type definition.
-  XmlDoctype get doctype => children.firstWhere(
+  XmlDoctype? get doctype => children.cast<XmlNode?>().firstWhere(
         (child) => child.runtimeType == XmlDoctype,
         orElse: () => null,
-      );
+      ) as XmlDoctype?;
 
   /// The root level element.
   ///
   /// In a valid XML document, all elements besides the
   /// root element are nested within the root element.
-  XmlElement get root => children.firstWhere(
+  XmlElement? get root => children.cast<XmlNode?>().firstWhere(
         (node) => node.runtimeType == XmlElement,
         orElse: () => null,
-      );
+      ) as XmlElement?;
 
   /// Attempts to load all external DTD references contained
   /// within the [XmlDoctype] and nested [XmlEntity]s, load the pages
@@ -53,8 +52,7 @@ class XmlDocument extends NodeWithChildren {
   /// declaration's `standalone` attribute is set to `yes`.
   Future<void> loadExternalDtd() async {
     // Don't attempt to load DTDs if the document is flagged as standalone.
-    if ((xmlDeclaration.standalone != null && xmlDeclaration.standalone) ||
-        children.isEmpty) return;
+    if (xmlDeclaration?.standalone == true || children.isEmpty) return;
 
     for (var i = 0; i < children.length; i++) {
       final child = children[i];
@@ -62,11 +60,13 @@ class XmlDocument extends NodeWithChildren {
       if (child is XmlConditional) {
         await child.loadExternalDtd();
       } else if (child is XmlDoctype) {
-        children[i] = await child.loadExternalDtd();
+        final externalDtd = await child.loadExternalDtd();
+        if (externalDtd != null) children[i] = externalDtd;
       } else if (child is XmlElement) {
         await child.loadExternalDtd();
       } else if (child is XmlEntity) {
-        children[i] = await child.loadExternalEntities();
+        final externalEntities = await child.loadExternalEntities();
+        if (externalEntities != null) children[i] = externalEntities;
       }
     }
 
@@ -93,13 +93,9 @@ class XmlDocument extends NodeWithChildren {
   String toString({
     bool doubleQuotes = true,
     bool encodeCharacterEntities = true,
-    String encodeCharacters,
+    String? encodeCharacters,
   }) {
-    assert(doubleQuotes != null);
-    assert(encodeCharacterEntities != null);
-
-    return helpers.childrenToString(
-      children: children,
+    return children.write(
       encodeCharacterEntities: encodeCharacterEntities,
       encodeCharacters: encodeCharacters,
       doubleQuotes: doubleQuotes,
@@ -111,12 +107,11 @@ class XmlDocument extends NodeWithChildren {
   /// New lines will be added after each tag, and all nested
   /// elements will be padded by [indent] multipled by the
   /// current nesting level. [indent] defaults to 2 spaces.
+  @override
   String toFormattedString({
     int nestingLevel = 0,
     String indent = '\t',
   }) {
-    assert(indent != null);
-
     var document = '';
 
     for (var node in children) {
@@ -153,25 +148,16 @@ class XmlDocument extends NodeWithChildren {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if the document is empty.
-  factory XmlDocument.from(
+  static XmlDocument? from(
     String document, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
     bool parseCdataAsText = true,
   }) {
-    assert(document != null);
-    assert(parseCharacterEntities != null);
-    assert(parseComments != null);
-    assert(trimWhitespace != null);
-    assert(parseCdataAsText != null);
-
-    if (!parseComments) document = helpers.removeComments(document);
-
-    if (trimWhitespace) document = helpers.trimWhitespace(document);
-
+    if (!parseComments) document = document.removeComments();
+    if (trimWhitespace) document = document.trimWhitespace();
     document = document.trim();
-
     if (document.isEmpty) return null;
 
     final nodes = XmlNode.parseString(
@@ -204,18 +190,13 @@ class XmlDocument extends NodeWithChildren {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if the document couldn't be reached or is empty.
-  static Future<XmlDocument> fromUri(
+  static Future<XmlDocument?> fromUri(
     String uri, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
     bool parseCdataAsText = true,
   }) async {
-    assert(uri != null);
-    assert(parseComments != null);
-    assert(trimWhitespace != null);
-    assert(parseCdataAsText != null);
-
     final XmlDocument document = await XmlNode.fromUri(
       uri,
       parseCharacterEntities: parseCharacterEntities,

@@ -18,7 +18,7 @@ class Delimiters {
     startDelimiter: RegExp(r'<\s*!\s*\[\s*CDATA\s*\['),
     endDelimiter: RegExp(r']\s*]\s*>'),
     captureGroupName: 'value',
-    isDotAll: true,
+    dotAll: true,
   );
 
   /// Matches comments delimited with `<!--` and `-->`
@@ -31,7 +31,7 @@ class Delimiters {
         r'<!\[\s*(?!(?:c|C)(?:d|D)(?:a|A)(?:t|T)(?:a|A))(?<condition>[^\s[]*)\s*\['),
     endDelimiter: RegExp(r']\s*]\s*>'),
     captureGroupName: 'value',
-    isDotAll: true,
+    dotAll: true,
   );
 
   /// Matches XML Declarations and captures their attributes.
@@ -58,14 +58,13 @@ class Delimiters {
   /// Matches an XML element from its opening tag to its
   /// closing tag and captures its children.
   static RecursiveRegex element(String elementName, {bool global = false}) {
-    assert(elementName != null && elementName.isNotEmpty);
-    assert(global != null);
+    assert(elementName.isNotEmpty);
 
     return RecursiveRegex(
       startDelimiter: RegExp('<\\s*$elementName.*?>'),
       endDelimiter: RegExp('<\\s*\\/$elementName\\s*?>'),
       captureGroupName: 'children',
-      isDotAll: true,
+      dotAll: true,
       global: global,
     );
   }

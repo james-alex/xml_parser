@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
+import '../helpers/formatters.dart';
 import '../helpers/string_parser.dart';
 import '../xml_node.dart';
 
@@ -8,7 +8,7 @@ import '../xml_node.dart';
 ///
 /// See: https://www.w3.org/TR/xml/#Notations
 @immutable
-class XmlNotation implements XmlNode {
+class XmlNotation extends XmlNodeWithAttributes {
   /// A notation declaration, as known as an unparsed entity.
   ///
   /// [name] must not be `null` or empty.
@@ -19,13 +19,13 @@ class XmlNotation implements XmlNode {
   ///
   /// [uri] must not be `null` if [isSystem] is `true`, but is optional
   /// if [isPublic] is `true`.
-  XmlNotation({
-    this.name,
+  const XmlNotation({
+    required this.name,
     this.isSystem = false,
     this.isPublic = false,
     this.publicId,
     this.uri,
-  })  : assert(name != null && name.isNotEmpty),
+  })  : assert(name.length > 0),
         assert((isSystem && !isPublic) || (!isSystem && isPublic)),
         assert(publicId == null || isPublic),
         assert(!isSystem || uri != null);
@@ -41,47 +41,21 @@ class XmlNotation implements XmlNode {
 
   /// A public ID may be used by the application to generate an alternative
   /// URI reference where an external notation may be found.
-  final String publicId;
+  final String? publicId;
 
   /// The location of the external notation.
-  final String uri;
+  final String? uri;
 
   @override
-  String toString([bool doubleQuotes = true]) {
-    assert(doubleQuotes != null);
-
+  String toString({bool doubleQuotes = true}) {
     final quotationMark = doubleQuotes ? '"' : '\'';
-
     final identifier = isSystem ? 'SYSTEM' : 'PUBLIC';
-
     final publicId = (this.publicId != null)
         ? ' $quotationMark${this.publicId}$quotationMark'
         : '';
-
     final uri =
         this.uri != null ? ' $quotationMark${this.uri}$quotationMark' : '';
-
     return '<!NOTATION $name $identifier$publicId$uri>';
-  }
-
-  @override
-  String toFormattedString({
-    int nestingLevel = 0,
-    String indent = '\t',
-    // TODO: int lineLength = 80,
-    bool doubleQuotes = true,
-  }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(doubleQuotes != null);
-
-    var notation =
-        helpers.formatLine(toString(doubleQuotes), nestingLevel, indent);
-
-    // TODO: Handle lineLength
-
-    return notation;
   }
 
   /// Returns the first Notation Declaration found in [string].
@@ -93,14 +67,11 @@ class XmlNotation implements XmlNode {
   /// a single space. [trimWhitespace] must not be `null`.
   ///
   /// Returns `null` if no valid Notation Declarations are found.
-  factory XmlNotation.from(
+  static XmlNotation? from(
     String string, {
     bool trimWhitespace = true,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-
-    return _parser.fromString(
+    return StringParser.from<XmlNotation>(
       input: string,
       delimiter: Delimiters.notation,
       getNode: _getNotation,
@@ -120,18 +91,15 @@ class XmlNotation implements XmlNode {
   /// be `null`, but must be `>= start` if provided.
   ///
   /// Returns `null` if no valid Notation Declarations are found.
-  static List<XmlNotation> parseString(
+  static List<XmlNotation>? parseString(
     String string, {
     bool trimWhitespace = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(trimWhitespace != null);
-    assert(start != null && start >= 0);
+    assert(start >= 0);
     assert(stop == null || stop >= start);
-
-    return _parser.parseString(
+    return StringParser.parse<XmlNotation>(
       input: string,
       delimiter: Delimiters.notation,
       getNode: _getNotation,
@@ -143,40 +111,30 @@ class XmlNotation implements XmlNode {
 
   /// Builds an [XmlNotation] node from a [RegExpMatch] if the captured
   /// values are valid, otherwise returns `null`.
-  static XmlNotation _getNotation(RegExpMatch notation) {
-    assert(notation != null);
-
+  static XmlNotation? _getNotation(RegExpMatch notation) {
     final name = notation.namedGroup('name');
-
     if (name == null) return null;
 
-    final identifier = notation.namedGroup('identifier').toUpperCase();
+    final identifier = notation.namedGroup('identifier')?.toUpperCase();
 
     final isPublic = identifier == 'PUBLIC';
     final isSystem = identifier == 'SYSTEM';
-
     if (!isPublic && !isSystem) return null;
 
-    String publicId;
-
-    String uri;
+    String? publicId;
+    String? uri;
 
     if (isPublic) {
       publicId = notation.namedGroup('value1');
-
       if (publicId == null) return null;
-
-      publicId = helpers.stripDelimiters(publicId);
-
+      publicId = publicId.stripDelimiters();
       uri = notation.namedGroup('value2');
-
-      uri = (uri.isEmpty) ? null : helpers.stripDelimiters(uri);
+      uri =
+          uri != null && uri.isNotEmpty == true ? uri.stripDelimiters() : null;
     } else {
       uri = notation.namedGroup('value1');
-
       if (uri == null) return null;
-
-      uri = helpers.stripDelimiters(uri);
+      uri = uri.stripDelimiters();
     }
 
     return XmlNotation(
@@ -187,9 +145,6 @@ class XmlNotation implements XmlNode {
       uri: uri,
     );
   }
-
-  /// Contains methods to parse strings for [XmlNotation] nodes.
-  static final StringParser<XmlNotation> _parser = StringParser<XmlNotation>();
 
   @override
   bool operator ==(Object o) =>

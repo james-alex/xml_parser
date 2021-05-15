@@ -1,9 +1,7 @@
 import 'package:xml_parser/xml_parser.dart';
 
-bool validateItems(List<XmlElement> items) {
-  assert(items != null);
-
-  if (items.length != 30) return false;
+bool validateItems(List<XmlElement>? items) {
+  if (items == null || items.length != 30) return false;
 
   var valid = true;
 
@@ -12,47 +10,47 @@ bool validateItems(List<XmlElement> items) {
 
     final values = itemValues[i];
 
-    if (item.getChild('title').text != values['title']) {
+    if (item.getChild('title')?.text != values['title']) {
       print('[validateHackerNewsItems] item.getChild(\'title\').text '
           '!= values[\'title\']');
       print('EXPECTED: ${values['title']}');
-      print('ACTUAL: ${item.getChild('title').text}');
+      print('ACTUAL: ${item.getChild('title')?.text}');
       valid = false;
       break;
     }
 
-    if (item.getChild('link').text != values['link']) {
+    if (item.getChild('link')?.text != values['link']) {
       print('[validateHackerNewsItems] item.getChild(\'link\').text '
           '!= values[\'link\']');
       print('EXPECTED: ${values['link']}');
-      print('ACTUAL: ${item.getChild('link').text}');
+      print('ACTUAL: ${item.getChild('link')?.text}');
       valid = false;
       break;
     }
 
-    if (item.getChild('pubDate').text != values['pubDate']) {
+    if (item.getChild('pubDate')?.text != values['pubDate']) {
       print('[validateHackerNewsItems] item.getChild(\'pubDate\').text '
           '!= values[\'pubDate\']');
       print('EXPECTED: ${values['pubDate']}');
-      print('ACTUAL: ${item.getChild('pubDate').text}');
+      print('ACTUAL: ${item.getChild('pubDate')?.text}');
       valid = false;
       break;
     }
 
-    if (item.getChild('comments').text != values['comments']) {
+    if (item.getChild('comments')?.text != values['comments']) {
       print('[validateHackerNewsItems] item.getChild(\'comments\').text '
           '!= values[\'comments\']');
       print('EXPECTED: ${values['comments']}');
-      print('ACTUAL: ${item.getChild('comments').text}');
+      print('ACTUAL: ${item.getChild('comments')?.text}');
       valid = false;
       break;
     }
 
-    if (item.getChild('description').text != values['description']) {
+    if (item.getChild('description')?.text != values['description']) {
       print('[validateHackerNewsItems] item.getChild(\'description\').text '
           '!= values[\'description\']');
       print('EXPECTED: ${values['description']}');
-      print('ACTUAL: ${item.getChild('description').text}');
+      print('ACTUAL: ${item.getChild('description')?.text}');
       valid = false;
       break;
     }

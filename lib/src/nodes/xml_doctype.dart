@@ -1,31 +1,31 @@
 import 'package:meta/meta.dart';
 import 'package:recursive_regex/recursive_regex.dart';
 import '../helpers/delimiters.dart';
-import '../helpers/helpers.dart' as helpers;
+import '../helpers/formatters.dart';
 import '../xml_node.dart';
 
 /// A XML DocType declaration.
 ///
 /// See: https://www.w3.org/TR/xml/#NT-doctypedecl
 @immutable
-class XmlDoctype implements XmlNode {
+class XmlDoctype extends XmlNode {
   /// A XML DocType declaration.
   ///
   /// [element] is required, must not be `null`, and must be `> 0` in length.
   ///
-  /// [isSystem] and [isPublic] must not be `null`, and only
-  /// one of them may be `true`.
-  XmlDoctype({
-    @required this.element,
-    this.isSystem,
-    this.isPublic,
+  /// [isSystem] and [isPublic] must not be `null`;
+  /// only one of them may be `true`.
+  const XmlDoctype({
+    required this.element,
+    this.isSystem = false,
+    this.isPublic = false,
     this.externalDtdName,
     this.externalDtdUri,
     this.externalDtd,
     this.internalDtd,
-  })  : assert(element != null && element.isNotEmpty),
-        assert(isSystem != null),
-        assert(!(isPublic && isSystem));
+  })  : assert(element.length > 0),
+        assert(!(isPublic && isSystem),
+            '[isPublic] and [isSystem] must not both be `true`.');
 
   /// The name of the DocType declaration.
   final String element;
@@ -37,16 +37,16 @@ class XmlDoctype implements XmlNode {
   final bool isPublic;
 
   /// The optional name of the external DTD file.
-  final String externalDtdName;
+  final String? externalDtdName;
 
   /// The URI to the external DTD file.
-  final String externalDtdUri;
+  final String? externalDtdUri;
 
   /// The parsed DTD elements from the external DTD file.
-  final List<XmlNode> externalDtd;
+  final List<XmlNode>? externalDtd;
 
   /// The parsed DTD elements nested within this DocType.
-  final List<XmlNode> internalDtd;
+  final List<XmlNode>? internalDtd;
 
   /// Attempts to load the external DTD file from [externalDtdUri] and
   /// parse the DTD elements contained within. A new [XmlDoctype] will
@@ -54,14 +54,10 @@ class XmlDoctype implements XmlNode {
   ///
   /// If the URI couldn't be reached or no DTD elements could be identified,
   /// Returns `null`.
-  Future<XmlDoctype> loadExternalDtd() async {
+  Future<XmlDoctype?> loadExternalDtd() async {
     if (externalDtdUri == null) return null;
-
-    final List<XmlNode> externalEntities =
-        await XmlNode.fromUri(externalDtdUri);
-
+    final externalEntities = await XmlNode.fromUri(externalDtdUri!);
     if (externalEntities == null) return null;
-
     return copyWith(externalDtd: externalEntities);
   }
 
@@ -76,18 +72,17 @@ class XmlDoctype implements XmlNode {
   /// of `null` if they're not provided with another value, otherwise
   /// they will default to this element's values.
   XmlDoctype copyWith({
-    String element,
-    bool isSystem,
-    bool isPublic,
-    String externalDtdName,
-    String externalDtdUri,
-    List<XmlNode> externalDtd,
-    List<XmlNode> internalDtd,
+    String? element,
+    bool? isSystem,
+    bool? isPublic,
+    String? externalDtdName,
+    String? externalDtdUri,
+    List<XmlNode>? externalDtd,
+    List<XmlNode>? internalDtd,
     bool copyNull = false,
   }) {
     assert(element == null || element.isNotEmpty);
-    assert(!(isPublic && isSystem));
-    assert(copyNull != null);
+    assert(isPublic == null || isSystem == null || !(isPublic && isSystem));
 
     if (!copyNull) {
       externalDtdName ??= this.externalDtdName;
@@ -96,14 +91,13 @@ class XmlDoctype implements XmlNode {
       internalDtd ??= this.internalDtd;
     }
 
+    isSystem ??= isPublic == true ? false : this.isSystem;
+    isPublic ??= isSystem == true ? false : this.isPublic;
+
     return XmlDoctype(
       element: element ?? this.element,
-      isSystem: isSystem ?? (isPublic != null)
-          ? !isPublic
-          : (this.isPublic != null) ? !this.isPublic : false,
-      isPublic: isPublic ?? (isSystem != null)
-          ? !isSystem
-          : (this.isSystem != null) ? !this.isSystem : false,
+      isSystem: isSystem,
+      isPublic: isPublic,
       externalDtdName: externalDtdName,
       externalDtdUri: externalDtdUri,
       externalDtd: externalDtd,
@@ -114,23 +108,19 @@ class XmlDoctype implements XmlNode {
   @override
   String toString({
     bool encodeCharacterEntities = true,
-    String encodeCharacters,
+    String? encodeCharacters,
     bool doubleQuotes = true,
   }) {
-    assert(encodeCharacterEntities != null);
-    assert(doubleQuotes != null);
-
     final doctype = _getTag(doubleQuotes);
 
     var internalDtd = '';
 
     if (this.internalDtd != null) {
-      final children = helpers.childrenToString(
-        children: this.internalDtd,
-        encodeCharacterEntities: encodeCharacterEntities,
-        encodeCharacters: encodeCharacters,
-        doubleQuotes: doubleQuotes,
-      );
+      final children = this.internalDtd!.write(
+            encodeCharacterEntities: encodeCharacterEntities,
+            encodeCharacters: encodeCharacters,
+            doubleQuotes: doubleQuotes,
+          );
 
       internalDtd = ' [$children]';
     }
@@ -142,53 +132,41 @@ class XmlDoctype implements XmlNode {
   String toFormattedString({
     int nestingLevel = 0,
     String indent = '\t',
-    // TODO: int lineLength = 80,
     bool encodeCharacterEntities = true,
-    String encodeCharacters,
+    String? encodeCharacters,
     bool doubleQuotes = true,
   }) {
-    assert(nestingLevel != null && nestingLevel >= 0);
-    assert(indent != null);
-    // TODO: assert(lineLength == null || lineLength > 0);
-    assert(encodeCharacterEntities != null);
-    assert(doubleQuotes != null);
+    assert(nestingLevel >= 0);
 
     var doctype = _getTag(doubleQuotes);
 
     if (internalDtd != null) {
       doctype += ' [\n';
-
-      doctype += helpers.formatChildren(
-        children: internalDtd,
+      doctype += internalDtd!.format(
         nestingLevel: nestingLevel,
         indent: indent,
         encodeCharacterEntities: encodeCharacterEntities,
         encodeCharacters: encodeCharacters,
         doubleQuotes: doubleQuotes,
       );
-
       doctype += '${(indent * nestingLevel)}]';
     }
 
     doctype += '>\n';
 
-    // TODO: Handle linelength
-
     return doctype;
   }
 
   String _getTag(bool doubleQuotes) {
-    assert(doubleQuotes != null);
-
     final quotationMark = (doubleQuotes) ? '"' : '\'';
-
-    final externalDtdDeclaration =
-        isSystem ? ' SYSTEM' : isPublic ? ' PUBLIC' : '';
-
+    final externalDtdDeclaration = isSystem
+        ? ' SYSTEM'
+        : isPublic
+            ? ' PUBLIC'
+            : '';
     final externalDtdName = (this.externalDtdName != null)
         ? ' $quotationMark${this.externalDtdName}$quotationMark'
         : '';
-
     return '<!DOCTYPE $element$externalDtdDeclaration$externalDtdName';
   }
 
@@ -210,19 +188,13 @@ class XmlDoctype implements XmlNode {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if no Doctype Declarations are found.
-  factory XmlDoctype.from(
+  static XmlDoctype? from(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
     bool parseCdataAsText = true,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(parseComments != null);
-    assert(trimWhitespace != null);
-    assert(parseCdataAsText != null);
-
     return parseString(
       string,
       parseCharacterEntities: parseCharacterEntities,
@@ -251,72 +223,55 @@ class XmlDoctype implements XmlNode {
   /// returned as [XmlText] nodes. [parseCdataAsText] must not be `null`.
   ///
   /// Returns `null` if no Doctype Declarations are found.
-  static List<XmlDoctype> parseString(
+  static List<XmlDoctype>? parseString(
     String string, {
     bool parseCharacterEntities = true,
     bool parseComments = false,
     bool trimWhitespace = true,
     bool parseCdataAsText = true,
     int start = 0,
-    int stop,
+    int? stop,
   }) {
-    assert(string != null);
-    assert(parseCharacterEntities != null);
-    assert(parseCharacterEntities != null);
-    assert(parseComments != null);
-    assert(trimWhitespace != null);
-    assert(parseCdataAsText != null);
-
-    if (!parseComments) string = helpers.removeComments(string);
-
-    if (trimWhitespace) string = helpers.trimWhitespace(string);
+    if (!parseComments) string = string.removeComments();
+    if (trimWhitespace) string = string.trimWhitespace();
 
     final doctypes = <XmlDoctype>[];
 
     final tags = _delimiter.allMatches(string);
-
-    if (tags == null || start >= tags.length) return null;
+    if (tags.isEmpty || start >= tags.length) return null;
 
     for (var tag in tags) {
       if (tag.namedGroup('isMarkup') != '!') continue;
-
       if (tag.namedGroup('doctype') != 'DOCTYPE') continue;
 
       final doctype =
-          Delimiters.doctype.firstMatch(string.substring(tag.start, tag.end));
+          Delimiters.doctype.firstMatch(string.substring(tag.start, tag.end))!;
 
       final element = doctype.namedGroup('name');
-
       if (element == null) continue;
 
       // Capture and parse the external DTD values, if thye exist.
       final identifier = doctype.namedGroup('identifier');
 
-      String externalDtdName;
-
+      String? externalDtdName;
       var externalDtd = doctype.namedGroup('externalDtd');
-
       if (externalDtd != null) {
         final externalDtdParts =
             RegExp('".*?"|\'.?\'').allMatches(externalDtd).toList();
-
         if (externalDtdParts.length > 1) {
           final name = externalDtdParts.first;
-
           externalDtdName = externalDtd.substring(name.start + 1, name.end - 1);
-
           final path = externalDtdParts[1];
-
           externalDtd = externalDtd.substring(path.start + 1, path.start - 1);
         } else {
-          externalDtd = helpers.stripDelimiters(externalDtd);
+          externalDtd = externalDtd.stripDelimiters();
         }
       }
 
       // Caputre and parse the internal DTD value, if it exists.
       final internalDtdValue = doctype.namedGroup('internalDtd');
 
-      List<XmlNode> internalDtd;
+      List<XmlNode>? internalDtd;
 
       if (internalDtdValue != null) {
         internalDtd = XmlNode.parseString(
@@ -358,34 +313,26 @@ class XmlDoctype implements XmlNode {
 
       // Compare external flags.
       if (isSystem != o.isSystem) return false;
-
       if (isPublic != o.isPublic) return false;
 
       // Compare external DTD values.
       if (externalDtdName != o.externalDtdName) return false;
-
       if (externalDtdUri != o.externalDtdUri) return false;
-
       if (externalDtd == null && o.externalDtd != null) return false;
-
       if (externalDtd != null && o.externalDtd == null) return false;
-
       if (externalDtd != null) {
-        if (externalDtd.length != o.externalDtd.length) return false;
-
-        for (var i = 0; i < externalDtd.length; i++) {
-          if (externalDtd[i] != o.externalDtd[i]) return false;
+        if (externalDtd!.length != o.externalDtd!.length) return false;
+        for (var i = 0; i < externalDtd!.length; i++) {
+          if (externalDtd![i] != o.externalDtd![i]) return false;
         }
       }
 
       // Compare internal DTD values.
       if (internalDtd != null && o.internalDtd == null) return false;
-
       if (internalDtd == null && o.internalDtd != null) return false;
-
       if (internalDtd != null) {
-        for (var i = 0; i < internalDtd.length; i++) {
-          if (internalDtd[i] != o.internalDtd[i]) return false;
+        for (var i = 0; i < internalDtd!.length; i++) {
+          if (internalDtd![i] != o.internalDtd![i]) return false;
         }
       }
 

@@ -1,12 +1,6 @@
 # xml_parser
 
-[![pub package](https://img.shields.io/pub/v/xml_parser.svg)](https://pub.dartlang.org/packages/xml_parser)
-[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
-
 An unopinionated XML parser that can read, traverse, and write XML documents.
-
-__Documentation (API Reference):__
-https://pub.dev/documentation/xml_parser/latest/
 
 # Usage
 
@@ -212,7 +206,7 @@ List<XmlElement> getChildrenWhere({
   bool childrenMustBeIdentical = false,
   bool ignoreNestedMatches = true,
   int start = 0,
-  int stop,
+  int? stop,
 });
 ```
 
@@ -243,7 +237,7 @@ List<XmlElement> getElements(
   String elementName, {
   bool ignoreNestedMatches = true,
   int start = 0,
-  int stop,
+  int? stop,
 });
 
 /// Recursively checks all elements within the node tree and returns
@@ -303,7 +297,7 @@ List<XmlElement> getElementsWhere({
   bool childrenMustBeIdentical = false,
   bool ignoreNestedMatches = true,
   int start = 0,
-  int stop,
+  int? stop,
 });
 ```
 
@@ -453,7 +447,7 @@ An element's ID can be retrieved with the getter [id], which will find
 the first attribute named [id], if it exists, and return its value.
 
 All [XmlElement]s without any children will be considered an empty element,
-and will written with a self-closing tag by the [toString] and
+and will be written with a self-closing tag by the [toString] and
 [toFormattedString] methods.
 
 By default, [XmlElement]'s [parseString] method will only return
