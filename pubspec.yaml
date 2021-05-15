@@ -1,6 +1,6 @@
 name: xml_parser
 description: An unopinionated XML parser that can read, traverse, modify, and write XML documents.
-version: 0.1.2
+version: 1.0.0
 homepage: https://github.com/james-alex/xml_parser
 
 environment:

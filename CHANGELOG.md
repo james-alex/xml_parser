@@ -1,6 +1,16 @@
+## [1.0.0] - May 15, 2021
+
+* Migrated to null-safe code.
+
+* Constructors were made constant again.
+
+* All nodes now extend [XmlNode] directly or indirectly, rather than implementing it.
+
+* Made the helper methods extension methods on their relevant classes.
+
 ## [0.1.2] - January 19, 2020
 
-* Nodes are no longer constant.
+* Constructors are no longer constant.
 
 ## [0.1.1] - January 16, 2020
 
